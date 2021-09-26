@@ -40,7 +40,7 @@ public class DatabaseModel {
   }
 
   public static String htmlQuery(String query) {
-    String html = "<h3>Sorry, no words found!</h3>";
+    StringBuilder html = new StringBuilder();
     Connection connection = null;
     try {
       connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
@@ -49,7 +49,7 @@ public class DatabaseModel {
       ResultSet rs = statement.executeQuery("SELECT * FROM av WHERE word = \"" + query + "\"");
 
       while(rs.next()) {
-        html = rs.getString("html");
+        html.append(rs.getString("html"));
       }
     } catch (SQLException e) {
       System.err.println(e.getMessage());
@@ -60,6 +60,6 @@ public class DatabaseModel {
         System.err.println(e.getMessage());
       }
     }
-    return html;
+    return html.toString() == "" ? "<h3>Sorry, no words found!</h3>" : html.toString();
   }
 }
