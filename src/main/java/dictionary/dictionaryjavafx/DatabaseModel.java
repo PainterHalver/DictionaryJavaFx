@@ -5,32 +5,23 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class DatabaseModel {
 
 
-  public static void main(String[] args) {
-    System.out.println("Hello Database!");
-
-    long begin = System.currentTimeMillis();
-    System.out.println(begin);
+  public static String[] wordsQuery(String query) {
+    ArrayList<String> wordsRtn = new ArrayList<String>();
     Connection connection = null;
     try {
-      // create a database connection
       connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
-
       Statement statement = connection.createStatement();
       statement.setQueryTimeout(30);  // set timeout to 30 sec.
+      ResultSet rs = statement.executeQuery("SELECT * FROM av WHERE word LIKE \"" + query + "%\" LIMIT 10");
 
-      ResultSet rs = statement.executeQuery("SELECT * FROM av WHERE word LIKE \"abso%\" LIMIT 100");
-
-      while(rs.next())
-      {
-        // read the result set
-        System.out.print("word:" + rs.getString("word"));
-        System.out.print("meaning: " + rs.getString(4) + "\n");
+      while(rs.next()) {
+        wordsRtn.add(rs.getString("word"));
       }
-      System.out.println("Time elapsed: " + (System.currentTimeMillis() - begin));
 
 
     } catch (SQLException e) {
@@ -45,6 +36,30 @@ public class DatabaseModel {
         System.err.println(e.getMessage());
       }
     }
+    return wordsRtn.toArray(new String[0]);
+  }
 
+  public static String htmlQuery(String query) {
+    String html = "<h3>Sorry, no words found!</h3>";
+    Connection connection = null;
+    try {
+      connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
+      Statement statement = connection.createStatement();
+      statement.setQueryTimeout(30);  // set timeout to 30 sec.
+      ResultSet rs = statement.executeQuery("SELECT * FROM av WHERE word = \"" + query + "\"");
+
+      while(rs.next()) {
+        html = rs.getString("html");
+      }
+    } catch (SQLException e) {
+      System.err.println(e.getMessage());
+    } finally {
+      try {
+        if(connection != null) connection.close();
+      } catch(SQLException e) {
+        System.err.println(e.getMessage());
+      }
+    }
+    return html;
   }
 }
