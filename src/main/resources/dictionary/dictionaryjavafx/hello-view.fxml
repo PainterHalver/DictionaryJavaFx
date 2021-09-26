@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,11 +11,8 @@
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="250.0">
          <children>
-            <TextField id="searchInput" fx:id="searchInput" layoutY="2.0" prefHeight="40.0" prefWidth="250.0" style="-fx-border-color: #999; -fx-background-radius: 0; -fx-border-width: 0;" styleClass="input" stylesheets="@style.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <ScrollPane layoutY="40.0" prefHeight="560.0" prefWidth="250.0" style="-fx-border-width: 0;">
-               <content>
-                  <ListView fx:id="wordListView" prefHeight="560.0" prefWidth="250.0" />
-               </content></ScrollPane>
+            <TextField id="searchInput" fx:id="searchInput" layoutY="2.0" prefHeight="40.0" prefWidth="250.0" promptText="Search" style="-fx-border-color: #999; -fx-background-radius: 0; -fx-border-width: 0;" styleClass="input" stylesheets="@style.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <ListView fx:id="wordListView" layoutY="40.0" prefHeight="560.0" prefWidth="250.0" />
          </children>
       </AnchorPane>
       <AnchorPane layoutX="250.0" prefHeight="600.0" prefWidth="650.0">
@@ -25,6 +21,7 @@
               <items>
                 <Button id="btn__test" fx:id="btnTest" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Test" />
                   <Button id="btn__ggApi" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="API Google" />
+                  <Button id="btn__ggTranslateWeb" fx:id="btnGgWebEngine" mnemonicParsing="false" styleClass="btn" text="Google translate nhung ko phai api :v" />
               </items>
             </ToolBar>
             <WebView fx:id="webView" layoutY="40.0" prefHeight="560.0" prefWidth="650.0" />

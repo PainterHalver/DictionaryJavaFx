@@ -17,7 +17,7 @@ public class DatabaseModel {
       connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
       Statement statement = connection.createStatement();
       statement.setQueryTimeout(30);  // set timeout to 30 sec.
-      ResultSet rs = statement.executeQuery("SELECT * FROM av WHERE word LIKE \"" + query + "%\" LIMIT 10");
+      ResultSet rs = statement.executeQuery("SELECT * FROM av WHERE word LIKE \"" + query + "%\" LIMIT 50");
 
       while(rs.next()) {
         wordsRtn.add(rs.getString("word"));

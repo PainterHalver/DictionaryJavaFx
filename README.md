@@ -6,6 +6,6 @@ TODO:
 - class model cho database: 
   + ~~xem nghia cua tu~~ 
   + them tu moi
-- chuyen data to databaseModel sang o search (qua controller?)
-- word suggestion khi dang type
+- ~~chuyen data to databaseModel sang o search (qua controller?)~~
+- ~~word suggestion khi dang type~~
 - class model goi api cua google

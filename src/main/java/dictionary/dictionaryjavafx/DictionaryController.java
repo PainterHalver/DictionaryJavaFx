@@ -1,6 +1,8 @@
 package dictionary.dictionaryjavafx;
 
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.ResourceBundle;
@@ -22,6 +24,9 @@ public class DictionaryController implements Initializable {
   private Button btnTest;
 
   @FXML
+  private Button btnGgWebEngine;
+
+  @FXML
   private WebView webView;
 
   @FXML
@@ -38,7 +43,9 @@ public class DictionaryController implements Initializable {
     webEngine.loadContent(DatabaseModel.htmlQuery(currentWord));
 
 
-    //TYPE IN SEARCH
+    // render word list on app start
+    wordListView.getItems().addAll(DatabaseModel.wordsQuery(""));
+    // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
       System.out.println("keyEvent!!!!");
 
@@ -65,5 +72,12 @@ public class DictionaryController implements Initializable {
 
           }
         });
+
+    // GOOGLE TRANSLATE WEBENGINE
+    btnGgWebEngine.setOnMouseClicked(mouseEvent -> {
+      String query = searchInput.getText();
+      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&op=translate";
+      webEngine.load(urlToGo);
+    });
   }
 }
