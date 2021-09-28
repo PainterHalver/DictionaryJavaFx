@@ -9,15 +9,14 @@ import java.util.ArrayList;
 
 public class DatabaseModel {
 
-
-  public static String[] wordsQuery(String query) {
+  public String[] wordsQuery(String query) {
     ArrayList<String> wordsRtn = new ArrayList<String>();
     Connection connection = null;
     try {
       connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
       Statement statement = connection.createStatement();
       statement.setQueryTimeout(30);  // set timeout to 30 sec.
-      ResultSet rs = statement.executeQuery("SELECT * FROM av WHERE word LIKE \"" + query + "%\" LIMIT 50");
+      ResultSet rs = statement.executeQuery("SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query + "%\" LIMIT 100");
 
       while(rs.next()) {
         wordsRtn.add(rs.getString("word"));
@@ -39,7 +38,7 @@ public class DatabaseModel {
     return wordsRtn.toArray(new String[0]);
   }
 
-  public static String htmlQuery(String query) {
+  public String htmlQuery(String query) {
     StringBuilder html = new StringBuilder();
     Connection connection = null;
     try {

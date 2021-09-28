@@ -5,7 +5,9 @@ TODO:
 - ~~giao dien co ban: thanh search, cot results, webview meaning~~
 - class model cho database: 
   + ~~xem nghia cua tu~~ 
-  + them tu moi
+  + them, sua, xoa tu moi
 - ~~chuyen data to databaseModel sang o search (qua controller?)~~
 - ~~word suggestion khi dang type~~
 - class model goi api cua google
+- responsive du chi la 1 it :v
+- ~~view~~ (scene) cho phan them sua xoa (1 hay nhieu scene)

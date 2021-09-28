@@ -3,21 +3,16 @@ package dictionary.dictionaryjavafx;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.ResourceBundle;
-import java.util.Set;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import org.controlsfx.control.textfield.TextFields;
 
 public class DictionaryController implements Initializable {
   @FXML
@@ -39,12 +34,14 @@ public class DictionaryController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    DatabaseModel db = new DatabaseModel();
+
     WebEngine webEngine = webView.getEngine();
-    webEngine.loadContent(DatabaseModel.htmlQuery(currentWord));
+    webEngine.loadContent(db.htmlQuery(currentWord));
 
 
     // render word list on app start
-    wordListView.getItems().addAll(DatabaseModel.wordsQuery(""));
+    wordListView.getItems().addAll(db.wordsQuery(""));
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
       System.out.println("keyEvent!!!!");
@@ -53,7 +50,7 @@ public class DictionaryController implements Initializable {
       wordListView.getItems().clear();
 
       // 2. Query words then add to list view
-      String[] wordSuggestions = DatabaseModel.wordsQuery(searchInput.getText());
+      String[] wordSuggestions = db.wordsQuery(searchInput.getText());
       wordListView.getItems().addAll(wordSuggestions);
     });
 
@@ -67,7 +64,7 @@ public class DictionaryController implements Initializable {
 
             // Persist meaning view
             if(currentWord != null) {
-              webEngine.loadContent(DatabaseModel.htmlQuery(currentWord));
+              webEngine.loadContent(db.htmlQuery(currentWord));
             }
 
           }
