@@ -1,11 +1,12 @@
 package dictionary.dictionaryjavafx;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -16,7 +17,10 @@ import javafx.scene.web.WebView;
 
 public class DictionaryController implements Initializable {
   @FXML
-  private Button btnTest;
+  private Button btnSearch;
+  
+  @FXML
+  private Button btnGoogleScriptApi;
 
   @FXML
   private Button btnGgWebEngine;
@@ -30,14 +34,16 @@ public class DictionaryController implements Initializable {
   @FXML
   private ListView<String> wordListView;
 
-  String currentWord = "hello";
+  String query = "hello";
+  String outText = "";
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     DatabaseModel db = new DatabaseModel();
+    GoogleScriptModel googleScript = new GoogleScriptModel();
 
     WebEngine webEngine = webView.getEngine();
-    webEngine.loadContent(db.htmlQuery(currentWord));
+    webEngine.loadContent(db.htmlQuery(query));
 
 
     // render word list on app start
@@ -55,24 +61,59 @@ public class DictionaryController implements Initializable {
     });
 
     // PICK A WORD IN LISTVIEW EVENT HANDLER
+    // https://www.youtube.com/watch?v=Pqfd4hoi5cc
     wordListView.getSelectionModel().selectedItemProperty().addListener(
-        new ChangeListener<String>() {
-          @Override
-          public void changed(ObservableValue<? extends String> observableValue, String s,
-                              String t1) {
-            currentWord = wordListView.getSelectionModel().getSelectedItem();
+        (observableValue, s, t1) -> {
+          query = wordListView.getSelectionModel().getSelectedItem();
 
-            // Persist meaning view
-            if(currentWord != null) {
-              webEngine.loadContent(db.htmlQuery(currentWord));
-            }
-
+          // Persist meaning view
+          if(query != null) {
+            webEngine.loadContent(db.htmlQuery(query));
           }
         });
 
+    // ENTER PRESSED OR SEARCH BUTTON CLICKED
+    btnSearch.setOnMouseClicked(mouseEvent -> {
+      query = searchInput.getText();
+      if(!Objects.equals(query, "")) {
+        webEngine.loadContent(db.htmlQuery(query));
+      }
+    });
+    searchInput.setOnAction(actionEvent -> {
+      query = searchInput.getText();
+      if(!Objects.equals(query, "")) {
+        webEngine.loadContent(db.htmlQuery(query));
+      }
+    });
+
+    // GOOGLE SCRIPT API BUTTON HANDLE
+//    btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
+//      query = searchInput.getText();
+//      try {
+//        webEngine.loadContent(googleScript.translate("en", "vi", query));
+//      } catch (IOException e) {
+//        webEngine.loadContent(e.toString());
+//      };
+//    });
+
+    // NON-BLOCKING GOOGLE SCRIPT API CALL
+    btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
+      Thread testThread = new Thread(() -> {
+        System.out.println("api clicked");
+        query = searchInput.getText();
+        try {
+          outText = googleScript.translate("en", "vi", query);
+          Platform.runLater(() -> webEngine.loadContent("<p>" + outText + "</p>")); // p tag for new line if > viewport width
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      });
+      testThread.start();
+    });
+    
     // GOOGLE TRANSLATE WEBENGINE
     btnGgWebEngine.setOnMouseClicked(mouseEvent -> {
-      String query = searchInput.getText();
+      query = searchInput.getText();
       String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&op=translate";
       webEngine.load(urlToGo);
     });

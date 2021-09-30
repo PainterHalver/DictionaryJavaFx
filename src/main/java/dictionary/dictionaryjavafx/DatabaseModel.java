@@ -7,10 +7,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * https://github.com/xerial/sqlite-jdbc
+ */
 public class DatabaseModel {
 
   public String[] wordsQuery(String query) {
-    ArrayList<String> wordsRtn = new ArrayList<String>();
+    ArrayList<String> wordsRtn = new ArrayList<>();
     Connection connection = null;
     try {
       connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
@@ -59,6 +62,9 @@ public class DatabaseModel {
         System.err.println(e.getMessage());
       }
     }
-    return html.toString() == "" ? "<h3>Sorry, no words found!</h3>" : html.toString();
+
+    return html.toString().equals("")
+        ? "<h3>Sorry, no words found! <br> Maybe try using Google Translate instead?</h3>"
+        : html.toString();
   }
 }

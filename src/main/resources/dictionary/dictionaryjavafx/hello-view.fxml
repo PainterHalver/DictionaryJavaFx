@@ -19,8 +19,8 @@
          <children>
             <ToolBar prefHeight="40.0" prefWidth="650.0">
               <items>
-                <Button id="btn__test" fx:id="btnTest" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Test" />
-                  <Button id="btn__ggApi" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="API Google" />
+                <Button id="btn__search" fx:id="btnSearch" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Search" />
+                  <Button id="btn__ggApi" fx:id="btnGoogleScriptApi" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="API Google" />
                   <Button id="btn__ggTranslateWeb" fx:id="btnGgWebEngine" mnemonicParsing="false" styleClass="btn" text="Google translate nhung ko phai api :v" />
               </items>
             </ToolBar>

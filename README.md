@@ -8,6 +8,6 @@ TODO:
   + them, sua, xoa tu moi
 - ~~chuyen data to databaseModel sang o search (qua controller?)~~
 - ~~word suggestion khi dang type~~
-- class model goi api cua google
+- ~~class model goi api cua google, connect voi webview~~
 - responsive du chi la 1 it :v
 - ~~view~~ (scene) cho phan them sua xoa (1 hay nhieu scene)
