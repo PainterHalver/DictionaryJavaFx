@@ -1,21 +1,23 @@
 package dictionary.dictionaryjavafx;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import javax.sound.sampled.*;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.SourceDataLine;
 
 /**
- * http://www.voicerss.org/
- * https://stackoverflow.com/questions/13789063/get-sound-from-a-url-with-java
- * QUOTAS: 350 daily requests
+ * https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en&q=hello
  */
-public class TtsModel {
+public class GoogleTtsModel {
   public static void speak(String query) {
     AudioInputStream din = null;
     try {
-      AudioInputStream in = AudioSystem.getAudioInputStream(new URL("http://api.voicerss.org/?key=3b347642874c46b8a91b3b6373ad9916&hl=en-us&v=Mary&src=" + URLEncoder.encode(query, StandardCharsets.UTF_8)));
+      AudioInputStream in = AudioSystem.getAudioInputStream(new URL("https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en&q=" + URLEncoder.encode(query, StandardCharsets.UTF_8)));
       AudioFormat baseFormat = in.getFormat();
       AudioFormat decodedFormat = new AudioFormat(
           AudioFormat.Encoding.PCM_SIGNED,
@@ -51,5 +53,9 @@ public class TtsModel {
         try { din.close(); } catch(IOException ignored) { }
       }
     }
+  }
+
+  public static void main(String[] args) {
+    speak("hello world this is google speaking");
   }
 }
