@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class DatabaseModel {
 
-  public String[] wordsQuery(String query) {
+  public static String[] wordsQuery(String query) {
     ArrayList<String> wordsRtn = new ArrayList<>();
     Connection connection = null;
     try {
@@ -41,7 +41,7 @@ public class DatabaseModel {
     return wordsRtn.toArray(new String[0]);
   }
 
-  public String htmlQuery(String query) {
+  public static String htmlQuery(String query) {
     StringBuilder html = new StringBuilder();
     Connection connection = null;
     try {

@@ -39,24 +39,21 @@ public class DictionaryController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    DatabaseModel db = new DatabaseModel();
-    GoogleScriptModel googleScript = new GoogleScriptModel();
 
     WebEngine webEngine = webView.getEngine();
-    webEngine.loadContent(db.htmlQuery(query));
+    webEngine.loadContent(DatabaseModel.htmlQuery(query));
 
 
     // render word list on app start
-    wordListView.getItems().addAll(db.wordsQuery(""));
+    wordListView.getItems().addAll(DatabaseModel.wordsQuery(""));
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
-      System.out.println("keyEvent!!!!");
 
       // 1. Clear list view
       wordListView.getItems().clear();
 
       // 2. Query words then add to list view
-      String[] wordSuggestions = db.wordsQuery(searchInput.getText());
+      String[] wordSuggestions = DatabaseModel.wordsQuery(searchInput.getText());
       wordListView.getItems().addAll(wordSuggestions);
     });
 
@@ -68,7 +65,7 @@ public class DictionaryController implements Initializable {
 
           // Persist meaning view
           if(query != null) {
-            webEngine.loadContent(db.htmlQuery(query));
+            webEngine.loadContent(DatabaseModel.htmlQuery(query));
           }
         });
 
@@ -76,13 +73,13 @@ public class DictionaryController implements Initializable {
     btnSearch.setOnMouseClicked(mouseEvent -> {
       query = searchInput.getText();
       if(!Objects.equals(query, "")) {
-        webEngine.loadContent(db.htmlQuery(query));
+        webEngine.loadContent(DatabaseModel.htmlQuery(query));
       }
     });
     searchInput.setOnAction(actionEvent -> {
       query = searchInput.getText();
       if(!Objects.equals(query, "")) {
-        webEngine.loadContent(db.htmlQuery(query));
+        webEngine.loadContent(DatabaseModel.htmlQuery(query));
       }
     });
 
@@ -98,11 +95,14 @@ public class DictionaryController implements Initializable {
 
     // NON-BLOCKING GOOGLE SCRIPT API CALL
     btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
+      //loaing text
+      webEngine.loadContent("<h3>Sending it to Google, please wait... :)</h3>");
+
       Thread testThread = new Thread(() -> {
         System.out.println("api clicked");
         query = searchInput.getText();
         try {
-          outText = googleScript.translate("en", "vi", query);
+          outText = GoogleScriptModel.translate("en", "vi", query);
           Platform.runLater(() -> webEngine.loadContent("<p>" + outText + "</p>")); // p tag for new line if > viewport width
         } catch (IOException e) {
           e.printStackTrace();

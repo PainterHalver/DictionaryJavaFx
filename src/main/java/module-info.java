@@ -7,6 +7,7 @@ module dictionary.dictionaryjavafx {
   requires com.dlsc.formsfx;
   requires org.kordamp.bootstrapfx.core;
   requires java.sql;
+  requires java.desktop;
 
   opens dictionary.dictionaryjavafx to javafx.fxml;
   exports dictionary.dictionaryjavafx;

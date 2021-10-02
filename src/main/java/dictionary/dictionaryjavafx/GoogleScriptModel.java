@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class GoogleScriptModel {
 
-  public String translate(String langFrom, String langTo, String text) throws IOException {
+  public static String translate(String langFrom, String langTo, String text) throws IOException {
     // INSERT YOU URL HERE
     String urlStr = "https://script.google.com/macros/s/AKfycbyX0vgobPcX82_GwJ7wrjqopu1KkL3rM2AVS6jZg_kuiB9YUqVSezvuWiRUCDdl5QSh/exec" +
         "?q=" + URLEncoder.encode(text, StandardCharsets.UTF_8) +
