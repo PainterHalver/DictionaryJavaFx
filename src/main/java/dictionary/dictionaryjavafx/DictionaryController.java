@@ -35,7 +35,8 @@ public class DictionaryController implements Initializable {
   //private ListView<String> wordListView;
   private ListView<Expression> wordListView;
 
-  String query = "hello";
+//  String query = "hello";
+  Expression query = new Expression("hello");
   String outText = "";
 
   @Override
@@ -66,24 +67,27 @@ public class DictionaryController implements Initializable {
     wordListView.getSelectionModel().selectedItemProperty().addListener(
         (observableValue, s, t1) -> {
           //query = wordListView.getSelectionModel().getSelectedItem();
-          query = wordListView.getSelectionModel().getSelectedItem().getExpression();
+          //query = wordListView.getSelectionModel().getSelectedItem();
 
           // Persist meaning view
-          if(query != null) {
+          if(wordListView.getSelectionModel().getSelectedItem() != null) {
+            query = wordListView.getSelectionModel().getSelectedItem();
             webEngine.loadContent(DatabaseModel.htmlQuery(query));
           }
         });
 
     // ENTER PRESSED OR SEARCH BUTTON CLICKED
     btnSearch.setOnMouseClicked(mouseEvent -> {
-      query = searchInput.getText();
-      if(!Objects.equals(query, "")) {
+//      query = searchInput.getText();
+      query.setExpression(searchInput.getText());
+      if(!Objects.equals(query.getExpression(), "")) {
         webEngine.loadContent(DatabaseModel.htmlQuery(query));
       }
     });
     searchInput.setOnAction(actionEvent -> {
-      query = searchInput.getText();
-      if(!Objects.equals(query, "")) {
+//      query = searchInput.getText();
+      query.setExpression(searchInput.getText());
+      if(!Objects.equals(query.getExpression(), "")) {
         webEngine.loadContent(DatabaseModel.htmlQuery(query));
       }
     });
@@ -95,9 +99,10 @@ public class DictionaryController implements Initializable {
 
       Thread testThread = new Thread(() -> {
         System.out.println("api clicked");
-        query = searchInput.getText();
+//        query = searchInput.getText();
+        query.setExpression(searchInput.getText());
         try {
-          outText = GoogleScriptModel.translate("en", "vi", query);
+          outText = GoogleScriptModel.translate("en", "vi", query.getExpression());
           Platform.runLater(() -> webEngine.loadContent("<p>" + outText + "</p>")); // p tag for new line if > viewport width
         } catch (IOException e) {
           e.printStackTrace();
@@ -108,8 +113,9 @@ public class DictionaryController implements Initializable {
     
     // GOOGLE TRANSLATE WEBENGINE
     btnGgWebEngine.setOnMouseClicked(mouseEvent -> {
-      query = searchInput.getText();
-      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&op=translate";
+//        query = searchInput.getText();
+      query.setExpression(searchInput.getText());
+      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(query.getExpression(), StandardCharsets.UTF_8) + "&op=translate";
       webEngine.load(urlToGo);
     });
   }

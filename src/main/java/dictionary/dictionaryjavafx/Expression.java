@@ -19,13 +19,17 @@ public class Expression {
     return expression;
   }
 
+  public void setExpression(String expression) {
+    this.expression = expression;
+  }
+
   public boolean isUserCreated() {
     return userCreated;
   }
 
   @Override
   public String toString() {
-    return getExpression();
+    return getExpression() + (userCreated ? "👤": "");
   }
 
 //  public static void main(String[] args) throws InterruptedException {
