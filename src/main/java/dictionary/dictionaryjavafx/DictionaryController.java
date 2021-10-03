@@ -32,7 +32,8 @@ public class DictionaryController implements Initializable {
   private TextField searchInput;
 
   @FXML
-  private ListView<String> wordListView;
+  //private ListView<String> wordListView;
+  private ListView<Expression> wordListView;
 
   String query = "hello";
   String outText = "";
@@ -45,7 +46,9 @@ public class DictionaryController implements Initializable {
 
 
     // render word list on app start
-    wordListView.getItems().addAll(DatabaseModel.wordsQuery(""));
+    //wordListView.getItems().addAll(DatabaseModel.wordsQuery(""));
+    wordListView.setItems(DatabaseModel.expressionsQuery(""));
+
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
 
@@ -53,15 +56,17 @@ public class DictionaryController implements Initializable {
       wordListView.getItems().clear();
 
       // 2. Query words then add to list view
-      String[] wordSuggestions = DatabaseModel.wordsQuery(searchInput.getText());
-      wordListView.getItems().addAll(wordSuggestions);
+      //String[] wordSuggestions = DatabaseModel.wordsQuery(searchInput.getText());
+      //wordListView.getItems().addAll(wordSuggestions);
+      wordListView.setItems(DatabaseModel.expressionsQuery(searchInput.getText()));
     });
 
     // PICK A WORD IN LISTVIEW EVENT HANDLER
     // https://www.youtube.com/watch?v=Pqfd4hoi5cc
     wordListView.getSelectionModel().selectedItemProperty().addListener(
         (observableValue, s, t1) -> {
-          query = wordListView.getSelectionModel().getSelectedItem();
+          //query = wordListView.getSelectionModel().getSelectedItem();
+          query = wordListView.getSelectionModel().getSelectedItem().getExpression();
 
           // Persist meaning view
           if(query != null) {
@@ -82,16 +87,6 @@ public class DictionaryController implements Initializable {
         webEngine.loadContent(DatabaseModel.htmlQuery(query));
       }
     });
-
-    // GOOGLE SCRIPT API BUTTON HANDLE
-//    btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
-//      query = searchInput.getText();
-//      try {
-//        webEngine.loadContent(googleScript.translate("en", "vi", query));
-//      } catch (IOException e) {
-//        webEngine.loadContent(e.toString());
-//      };
-//    });
 
     // NON-BLOCKING GOOGLE SCRIPT API CALL
     btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
