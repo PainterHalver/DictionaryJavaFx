@@ -10,20 +10,30 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
+
 
 public class DictionaryController implements Initializable {
   @FXML
   private Button btnSearch;
-  
+
   @FXML
   private Button btnGoogleScriptApi;
 
   @FXML
   private Button btnGgWebEngine;
+
+  @FXML
+  private Button btnSpeak;
 
   @FXML
   private WebView webView;
@@ -35,7 +45,35 @@ public class DictionaryController implements Initializable {
   private ListView<Expression> wordListView;
 
   Expression query = new Expression(Constants.INIT_QUERY);
-//  String outText = "";
+
+  static class XCell extends ListCell<Expression> {
+    HBox hbox = new HBox();
+    Label label = new Label("(empty)");
+    Pane pane = new Pane();
+    Button button = new Button("Speak");
+    Expression lastItem;
+
+    public XCell() {
+      super();
+      hbox.getChildren().addAll(label, pane, button);
+      HBox.setHgrow(pane, Priority.ALWAYS);
+      button.setOnAction(event -> TtsModel.googleTss(lastItem.getExpression()));
+    }
+
+    @Override
+    protected void updateItem(Expression item, boolean empty) {
+      super.updateItem(item, empty);
+      setText(null);  // No text in label of super class
+      if (empty) {
+        lastItem = null;
+        setGraphic(null);
+      } else {
+        lastItem = item;
+        label.setText(item!=null ? item.getExpression() : "");
+        setGraphic(hbox);
+      }
+    }
+  }
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -46,6 +84,7 @@ public class DictionaryController implements Initializable {
 
     // render word list on app start
     wordListView.setItems(DatabaseModel.expressionsQuery(""));
+    wordListView.setCellFactory(param -> new XCell());
 
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
@@ -106,5 +145,8 @@ public class DictionaryController implements Initializable {
       String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(query.getExpression(), StandardCharsets.UTF_8) + "&op=translate";
       webEngine.load(urlToGo);
     });
+
+    // TEXT TO SPEAK
+    btnSpeak.setOnMouseClicked(mouseEvent -> TtsModel.googleTss(searchInput.getText()));
   }
 }

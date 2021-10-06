@@ -21,7 +21,11 @@
               <items>
                 <Button id="btn__search" fx:id="btnSearch" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Search" />
                   <Button id="btn__ggApi" fx:id="btnGoogleScriptApi" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="API Google" />
-                  <Button id="btn__ggTranslateWeb" fx:id="btnGgWebEngine" mnemonicParsing="false" styleClass="btn" text="Google translate nhung ko phai api :v" />
+                  <Button id="btn__ggTranslateWeb" fx:id="btnGgWebEngine" mnemonicParsing="false" styleClass="btn" text="GG Trans" />
+                  <Button fx:id="btnSpeak" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Speak" />
+                  <Button fx:id="btnAdd" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Add" />
+                  <Button fx:id="btnEdit" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Edit" />
+                  <Button fx:id="btnDelete" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Delete" />
               </items>
             </ToolBar>
             <WebView fx:id="webView" layoutY="40.0" prefHeight="560.0" prefWidth="650.0" />
