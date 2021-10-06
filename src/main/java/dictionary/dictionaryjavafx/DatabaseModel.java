@@ -22,13 +22,14 @@ public class DatabaseModel {
     try {
       connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
       Statement statement = connection.createStatement();
-      statement.setQueryTimeout(30);  // set timeout to 30 sec.
+      statement.setQueryTimeout(Constants.QUERY_TIMEOUT);
 
+      // Query from user added table
       ResultSet rs = statement.executeQuery("SELECT DISTINCT(word) FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY LENGTH(word) LIMIT 100");
       while (rs.next()) {
         expressionsRtn.add(new Expression(rs.getString("word"), true));
       }
-
+      // Query from old table
       ResultSet rs1 = statement.executeQuery("SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query + "%\" ORDER BY LENGTH(word) LIMIT 100");
       while (rs1.next()) {
         expressionsRtn.add(new Expression(rs.getString("word")));
@@ -59,49 +60,17 @@ public class DatabaseModel {
     return expressionsRtn;
   }
 
-  @Deprecated
-  public static String[] wordsQuery(String query) {
-    ArrayList<String> wordsRtn = new ArrayList<>();
-    Connection connection = null;
-    try {
-      connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
-      Statement statement = connection.createStatement();
-      statement.setQueryTimeout(30);  // set timeout to 30 sec.
-      ResultSet rs = statement.executeQuery("SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query + "%\" LIMIT 100");
-
-
-      while (rs.next()) {
-        wordsRtn.add(rs.getString("word"));
-      }
-    } catch (SQLException e) {
-      // if the error message is "out of memory",
-      // it probably means no database file is found
-      System.err.println(e.getMessage());
-    } finally {
-      try {
-        if (connection != null) connection.close();
-      } catch (SQLException e) {
-        // connection close failed.
-        System.err.println(e.getMessage());
-      }
-    }
-    return wordsRtn.toArray(new String[0]);
-  }
-
   public static String htmlQuery(Expression expression) {
     StringBuilder html = new StringBuilder();
     Connection connection = null;
     try {
       connection = DriverManager.getConnection("jdbc:sqlite:./src/main/database/dictionaryData.db");
       Statement statement = connection.createStatement();
-      statement.setQueryTimeout(30);
-//      ResultSet rs = statement.executeQuery(
-//          "SELECT * FROM "
-//              + (expression.isUserCreated() ? "ua" : "av")
-//              +" WHERE word = \""
-//              + expression.getExpression()
-//              + "\"");
+      statement.setQueryTimeout(Constants.QUERY_TIMEOUT);
+
       String exp = expression.getExpression();
+
+      // statement for filtering stupid padding that cannot be trimmed with TRIM(word)
       ResultSet rs = statement.executeQuery(
           "SELECT html FROM "
               + (expression.isUserCreated() ? "ua" : "av")
@@ -121,8 +90,13 @@ public class DatabaseModel {
         System.err.println(e.getMessage());
       }
     }
+
     return html.toString().equals("")
-        ? "<h3>Sorry, no words found! <br> Maybe try using Google Translate instead?</h3>"
+        ? Constants.NO_EXPRESSIONS_FOUND
         : html.toString();
+  }
+
+  public void userAction(String action, String ... args){
+
   }
 }

@@ -32,17 +32,18 @@ public class Expression {
     return getExpression() + (userCreated ? "👤": "");
   }
 
-//  public static void main(String[] args) throws InterruptedException {
-//    long begin = System.nanoTime();
-//    ArrayList<Expression> expressions = new ArrayList<>();
-//    for (int i = 0; i < 1000; ++i) {
-//      Expression e = new Expression(String.valueOf(i), true);
-//      expressions.add(e);
-//    }
-//    for(Expression i : expressions){
-//      System.out.println(i.expression);
-//    }
-//    System.out.println((double)(System.nanoTime() - begin)/1000000000);
-//  }
-
+  /*
+  public static void main(String[] args) throws InterruptedException {
+    long begin = System.nanoTime();
+    ArrayList<Expression> expressions = new ArrayList<>();
+    for (int i = 0; i < 1000; ++i) {
+      Expression e = new Expression(String.valueOf(i), true);
+      expressions.add(e);
+    }
+    for(Expression i : expressions){
+      System.out.println(i.expression);
+    }
+    System.out.println((double)(System.nanoTime() - begin)/1000000000);
+  }
+  */
 }

@@ -9,5 +9,6 @@ TODO:
 - ~~chuyen data to databaseModel sang o search (qua controller?)~~
 - ~~word suggestion khi dang type~~
 - ~~class model goi api cua google, connect voi webview~~
-- responsive du chi la 1 it :v
+- responsive du chi la 1 it (low prio)
 - ~~view~~ (scene) cho phan them sua xoa (1 hay nhieu scene)
+- sort user created word (created date, last-modified date, alphabet) each has ASC and DESC

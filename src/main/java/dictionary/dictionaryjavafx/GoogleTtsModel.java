@@ -17,7 +17,7 @@ public class GoogleTtsModel {
   public static void speak(String query) {
     AudioInputStream din = null;
     try {
-      AudioInputStream in = AudioSystem.getAudioInputStream(new URL("https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en&q=" + URLEncoder.encode(query, StandardCharsets.UTF_8)));
+      AudioInputStream in = AudioSystem.getAudioInputStream(new URL(Constants.GOOGLE_TTS_URL + URLEncoder.encode(query, StandardCharsets.UTF_8)));
       AudioFormat baseFormat = in.getFormat();
       AudioFormat decodedFormat = new AudioFormat(
           AudioFormat.Encoding.PCM_SIGNED,

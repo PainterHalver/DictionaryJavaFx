@@ -16,7 +16,7 @@ public class VoicerssTtsModel {
   public static void speak(String query) {
     AudioInputStream din = null;
     try {
-      AudioInputStream in = AudioSystem.getAudioInputStream(new URL("http://api.voicerss.org/?key=3b347642874c46b8a91b3b6373ad9916&hl=en-us&v=Mary&src=" + URLEncoder.encode(query, StandardCharsets.UTF_8)));
+      AudioInputStream in = AudioSystem.getAudioInputStream(new URL(Constants.VOICERSS_TTS_URL + URLEncoder.encode(query, StandardCharsets.UTF_8)));
       AudioFormat baseFormat = in.getFormat();
       AudioFormat decodedFormat = new AudioFormat(
           AudioFormat.Encoding.PCM_SIGNED,

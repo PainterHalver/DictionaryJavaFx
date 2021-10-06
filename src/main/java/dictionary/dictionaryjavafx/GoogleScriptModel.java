@@ -16,7 +16,7 @@ public class GoogleScriptModel {
 
   public static String translate(String langFrom, String langTo, String text) throws IOException {
     // INSERT YOU URL HERE
-    String urlStr = "https://script.google.com/macros/s/AKfycbyX0vgobPcX82_GwJ7wrjqopu1KkL3rM2AVS6jZg_kuiB9YUqVSezvuWiRUCDdl5QSh/exec" +
+    String urlStr = Constants.GOOGLE_SCRIPT_URL +
         "?q=" + URLEncoder.encode(text, StandardCharsets.UTF_8) +
         "&target=" + langTo +
         "&source=" + langFrom;

@@ -32,12 +32,10 @@ public class DictionaryController implements Initializable {
   private TextField searchInput;
 
   @FXML
-  //private ListView<String> wordListView;
   private ListView<Expression> wordListView;
 
-//  String query = "hello";
-  Expression query = new Expression("hello");
-  String outText = "";
+  Expression query = new Expression(Constants.INIT_QUERY);
+//  String outText = "";
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -47,7 +45,6 @@ public class DictionaryController implements Initializable {
 
 
     // render word list on app start
-    //wordListView.getItems().addAll(DatabaseModel.wordsQuery(""));
     wordListView.setItems(DatabaseModel.expressionsQuery(""));
 
     // TYPE IN SEARCH INPUT
@@ -57,8 +54,6 @@ public class DictionaryController implements Initializable {
       wordListView.getItems().clear();
 
       // 2. Query words then add to list view
-      //String[] wordSuggestions = DatabaseModel.wordsQuery(searchInput.getText());
-      //wordListView.getItems().addAll(wordSuggestions);
       wordListView.setItems(DatabaseModel.expressionsQuery(searchInput.getText()));
     });
 
@@ -66,8 +61,6 @@ public class DictionaryController implements Initializable {
     // https://www.youtube.com/watch?v=Pqfd4hoi5cc
     wordListView.getSelectionModel().selectedItemProperty().addListener(
         (observableValue, s, t1) -> {
-          //query = wordListView.getSelectionModel().getSelectedItem();
-          //query = wordListView.getSelectionModel().getSelectedItem();
 
           // Persist meaning view
           if(wordListView.getSelectionModel().getSelectedItem() != null) {
@@ -78,14 +71,12 @@ public class DictionaryController implements Initializable {
 
     // ENTER PRESSED OR SEARCH BUTTON CLICKED
     btnSearch.setOnMouseClicked(mouseEvent -> {
-//      query = searchInput.getText();
       query.setExpression(searchInput.getText());
       if(!Objects.equals(query.getExpression(), "")) {
         webEngine.loadContent(DatabaseModel.htmlQuery(query));
       }
     });
     searchInput.setOnAction(actionEvent -> {
-//      query = searchInput.getText();
       query.setExpression(searchInput.getText());
       if(!Objects.equals(query.getExpression(), "")) {
         webEngine.loadContent(DatabaseModel.htmlQuery(query));
@@ -95,14 +86,12 @@ public class DictionaryController implements Initializable {
     // NON-BLOCKING GOOGLE SCRIPT API CALL
     btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
       //loaing text
-      webEngine.loadContent("<h3>Sending it to Google, please wait... :)</h3>");
+      webEngine.loadContent(Constants.GOOGLE_API_LOADING_TEXT);
 
       Thread testThread = new Thread(() -> {
-        System.out.println("api clicked");
-//        query = searchInput.getText();
         query.setExpression(searchInput.getText());
         try {
-          outText = GoogleScriptModel.translate("en", "vi", query.getExpression());
+          String outText = GoogleScriptModel.translate("en", "vi", query.getExpression());
           Platform.runLater(() -> webEngine.loadContent("<p>" + outText + "</p>")); // p tag for new line if > viewport width
         } catch (IOException e) {
           e.printStackTrace();
@@ -113,7 +102,6 @@ public class DictionaryController implements Initializable {
     
     // GOOGLE TRANSLATE WEBENGINE
     btnGgWebEngine.setOnMouseClicked(mouseEvent -> {
-//        query = searchInput.getText();
       query.setExpression(searchInput.getText());
       String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(query.getExpression(), StandardCharsets.UTF_8) + "&op=translate";
       webEngine.load(urlToGo);
