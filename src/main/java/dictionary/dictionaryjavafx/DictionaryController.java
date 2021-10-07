@@ -5,11 +5,14 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -34,6 +37,9 @@ public class DictionaryController implements Initializable {
 
   @FXML
   private Button btnSpeak;
+
+  @FXML
+  private Button btnDelete;
 
   @FXML
   private WebView webView;
@@ -69,7 +75,7 @@ public class DictionaryController implements Initializable {
         setGraphic(null);
       } else {
         lastItem = item;
-        label.setText(item!=null ? item.getExpression() : "");
+        label.setText(item!=null ? item.toString() : "aaaa");
         setGraphic(hbox);
       }
     }
@@ -77,6 +83,8 @@ public class DictionaryController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    //Disable Delete button
+    btnDelete.setDisable(true);
 
     WebEngine webEngine = webView.getEngine();
     webEngine.loadContent(DatabaseModel.htmlQuery(query));
@@ -88,6 +96,9 @@ public class DictionaryController implements Initializable {
 
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
+
+      //0. Disable the Delete button
+      btnDelete.setDisable(true);
 
       // 1. Clear list view
       wordListView.getItems().clear();
@@ -105,6 +116,9 @@ public class DictionaryController implements Initializable {
           if(wordListView.getSelectionModel().getSelectedItem() != null) {
             query = wordListView.getSelectionModel().getSelectedItem();
             webEngine.loadContent(DatabaseModel.htmlQuery(query));
+
+            //If selected item is user created, enable the Delete button
+            btnDelete.setDisable(!query.isUserCreated());
           }
         });
 
@@ -128,9 +142,9 @@ public class DictionaryController implements Initializable {
       webEngine.loadContent(Constants.GOOGLE_API_LOADING_TEXT);
 
       Thread testThread = new Thread(() -> {
-        query.setExpression(searchInput.getText());
+//        query.setExpression(searchInput.getText());
         try {
-          String outText = GoogleScriptModel.translate("en", "vi", query.getExpression());
+          String outText = GoogleScriptModel.translate("en", "vi", searchInput.getText());
           Platform.runLater(() -> webEngine.loadContent("<p>" + outText + "</p>")); // p tag for new line if > viewport width
         } catch (IOException e) {
           e.printStackTrace();
@@ -141,12 +155,34 @@ public class DictionaryController implements Initializable {
     
     // GOOGLE TRANSLATE WEBENGINE
     btnGgWebEngine.setOnMouseClicked(mouseEvent -> {
-      query.setExpression(searchInput.getText());
-      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(query.getExpression(), StandardCharsets.UTF_8) + "&op=translate";
+//      query.setExpression(searchInput.getText());
+      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(searchInput.getText(), StandardCharsets.UTF_8) + "&op=translate";
       webEngine.load(urlToGo);
     });
 
     // TEXT TO SPEAK
     btnSpeak.setOnMouseClicked(mouseEvent -> TtsModel.googleTss(searchInput.getText()));
+
+    // DELETE BUTTON
+    btnDelete.setOnMouseClicked(mouseEvent -> {
+      //TODO: chuyen ao thanh that :v
+      Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+      alert.setTitle("Delete Word");
+      alert.setHeaderText("Are you sure you want to permanently delete this word?");
+      alert.setContentText(query.getExpression());
+      Optional<ButtonType> option = alert.showAndWait();
+
+      if (option.isPresent() && option.get() == ButtonType.OK) {
+        String word = query.getExpression();
+
+        // 1. Delete the word
+        DatabaseModel.deleteExpression(word);
+        // 2. Reload the word list view
+        wordListView.setItems(DatabaseModel.expressionsQuery(searchInput.getText()));
+        // 3. Rerender webengine so that user knows word is deleted
+        webEngine.loadContent("<h1>Deleted: " + word + "</h1>");
+      }
+    });
   }
+
 }

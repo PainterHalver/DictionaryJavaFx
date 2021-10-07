@@ -23,10 +23,10 @@ public class TtsModel {
    */
   public static void googleTss(String query) {
     if (Objects.equals(query, "")) return;
-    Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-    for (Thread x : threadSet) {
-      if (Objects.equals(x.getName(), "Google TTS Thread")) x.stop();
-    }
+//    Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+//    for (Thread x : threadSet) {
+//      if (Objects.equals(x.getName(), "Google TTS Thread")) x.stop();
+//    }
     Thread testThread = new Thread(() -> {
       try {
         AudioInputStream in = AudioSystem.getAudioInputStream(
