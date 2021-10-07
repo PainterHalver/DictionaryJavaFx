@@ -9,7 +9,10 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -22,7 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
+import javafx.stage.Stage;
 
 
 public class DictionaryController implements Initializable {
@@ -37,6 +40,9 @@ public class DictionaryController implements Initializable {
 
   @FXML
   private Button btnSpeak;
+
+  @FXML
+  private Button btnEdit;
 
   @FXML
   private Button btnDelete;
@@ -56,14 +62,15 @@ public class DictionaryController implements Initializable {
     HBox hbox = new HBox();
     Label label = new Label("(empty)");
     Pane pane = new Pane();
-    Button button = new Button("Speak");
+    Button speakBtn = new Button("\uD83D\uDD0A"); //speaker
     Expression lastItem;
 
     public XCell() {
       super();
-      hbox.getChildren().addAll(label, pane, button);
+      hbox.getChildren().addAll(label, pane, speakBtn);
       HBox.setHgrow(pane, Priority.ALWAYS);
-      button.setOnAction(event -> TtsModel.googleTss(lastItem.getExpression()));
+      speakBtn.cursorProperty().setValue(Cursor.HAND);
+      speakBtn.setOnAction(event -> TtsModel.googleTss(lastItem.getExpression()));
     }
 
     @Override
@@ -124,15 +131,18 @@ public class DictionaryController implements Initializable {
 
     // ENTER PRESSED OR SEARCH BUTTON CLICKED
     btnSearch.setOnMouseClicked(mouseEvent -> {
-      query.setExpression(searchInput.getText());
-      if(!Objects.equals(query.getExpression(), "")) {
-        webEngine.loadContent(DatabaseModel.htmlQuery(query));
+//      query.setExpression(searchInput.getText());
+//      if(!Objects.equals(query.getExpression(), "")) {
+      if(!Objects.equals(searchInput.getText(), "")) {
+        // Not changing the query
+        webEngine.loadContent(DatabaseModel.htmlQuery(new Expression(searchInput.getText())));
       }
     });
     searchInput.setOnAction(actionEvent -> {
-      query.setExpression(searchInput.getText());
-      if(!Objects.equals(query.getExpression(), "")) {
-        webEngine.loadContent(DatabaseModel.htmlQuery(query));
+//      query.setExpression(searchInput.getText());
+//      if(!Objects.equals(query.getExpression(), "")) {
+      if(!Objects.equals(searchInput.getText(), "")) {
+        webEngine.loadContent(DatabaseModel.htmlQuery(new Expression(searchInput.getText())));
       }
     });
 
@@ -163,9 +173,23 @@ public class DictionaryController implements Initializable {
     // TEXT TO SPEAK
     btnSpeak.setOnMouseClicked(mouseEvent -> TtsModel.googleTss(searchInput.getText()));
 
+    //EDIT BUTTON
+    btnEdit.setOnMouseClicked(mouseEvent -> {
+      FXMLLoader fxmlLoader = new FXMLLoader(DictionaryApplication.class.getResource("word-edit-view.fxml"));
+      Scene editScene;
+      Stage editStage = new Stage();
+      try {
+        editScene = new Scene(fxmlLoader.load(), 600, 400);
+        editStage.setTitle("Edit");
+        editStage.setScene(editScene);
+        editStage.show();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
+
     // DELETE BUTTON
     btnDelete.setOnMouseClicked(mouseEvent -> {
-      //TODO: chuyen ao thanh that :v
       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
       alert.setTitle("Delete Word");
       alert.setHeaderText("Are you sure you want to permanently delete this word?");

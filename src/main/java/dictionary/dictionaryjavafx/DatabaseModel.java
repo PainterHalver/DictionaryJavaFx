@@ -94,6 +94,7 @@ public class DatabaseModel {
       while (rs.next()) {
         html.append(rs.getString("html"));
       }
+
     } catch (SQLException e) {
       System.err.println(e.getMessage());
     } finally {
@@ -174,10 +175,6 @@ public class DatabaseModel {
   }
 
   public static void main(String[] args) {
-    addExpression("test5", "", "xin chào thế giới");
-    addExpression("test2", "", "xin chào thế giới");
-    addExpression("test3", "", "xin chào thế giới");
-    addExpression("test4", "", "xin chào thế giới");
 //    deleteExpression("test1");
   }
 }
