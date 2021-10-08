@@ -3,8 +3,17 @@ package dictionary.dictionaryjavafx;
 
 public class Expression {
   private String expression;
+  private String pronunciation;
+  private String meaning;
 
   private boolean userCreated = false;
+
+  Expression (String expression, String pronunciation, String meaning, Boolean userCreated) {
+    this.expression = expression;
+    this.userCreated = userCreated;
+    this.pronunciation = pronunciation;
+    this.meaning = meaning;
+  }
 
   Expression (String expression, Boolean userCreated) {
     this.expression = expression;
@@ -23,13 +32,17 @@ public class Expression {
     this.expression = expression;
   }
 
+  public String getPronunciation() {return pronunciation;}
+
+  public String getMeaning() {return meaning;}
+
   public boolean isUserCreated() {
     return userCreated;
   }
 
   @Override
   public String toString() {
-    return getExpression() + (userCreated ? "👤": "");
+    return (userCreated ? "👤 ": "") + getExpression();
   }
 
   /*

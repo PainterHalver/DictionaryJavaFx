@@ -98,7 +98,7 @@ public class DictionaryController implements Initializable {
 
 
     // render word list on app start
-    wordListView.setItems(DatabaseModel.expressionsQuery(""));
+    wordListView.setItems(DatabaseModel.allExpressionsQuery(""));
     wordListView.setCellFactory(param -> new XCell());
 
     // TYPE IN SEARCH INPUT
@@ -111,7 +111,7 @@ public class DictionaryController implements Initializable {
       wordListView.getItems().clear();
 
       // 2. Query words then add to list view
-      wordListView.setItems(DatabaseModel.expressionsQuery(searchInput.getText()));
+      wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
     });
 
     // PICK A WORD IN LISTVIEW EVENT HANDLER
@@ -202,7 +202,7 @@ public class DictionaryController implements Initializable {
         // 1. Delete the word
         DatabaseModel.deleteExpression(word);
         // 2. Reload the word list view
-        wordListView.setItems(DatabaseModel.expressionsQuery(searchInput.getText()));
+        wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
         // 3. Rerender webengine so that user knows word is deleted
         webEngine.loadContent("<h1>Deleted: " + word + "</h1>");
       }

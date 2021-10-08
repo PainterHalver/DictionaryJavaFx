@@ -38,23 +38,35 @@ public class DatabaseModel {
     }
   }
 
-  public static ObservableList<Expression> expressionsQuery(String query, String ... args) {
+  public static ObservableList<Expression> userExpressionsQuery(String query) {
     ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
     try {
       openConnection();
-      // Query from user added table
-      ResultSet rs = statement.executeQuery("SELECT DISTINCT(word) FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY LENGTH(word) LIMIT 100");
+      ResultSet rs = statement.executeQuery("SELECT word, pronunciation, meaning FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY LENGTH(word) LIMIT 100");
       while (rs.next()) {
-        expressionsRtn.add(new Expression(rs.getString("word"), true));
+        expressionsRtn.add(new Expression(rs.getString("word"), rs.getString("pronunciation"),
+            rs.getString("meaning"), true));
       }
-      if(args.length == 0) {
-        // Query from old table
-        ResultSet rs1 = statement.executeQuery(
-            "SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query +
-                "%\" ORDER BY LENGTH(word) LIMIT 100");
-        while (rs1.next()) {
-          expressionsRtn.add(new Expression(rs.getString("word")));
-        }
+    } catch (SQLException e) {
+      System.err.println(e.getMessage());
+    } finally {
+      closeConnection();
+    }
+    return expressionsRtn;
+  }
+
+  public static ObservableList<Expression> allExpressionsQuery(String query) {
+    ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
+    // Query from user added table
+    expressionsRtn.addAll(userExpressionsQuery(query));
+    try {
+      openConnection();
+      // Query from old table
+      ResultSet rs = statement.executeQuery(
+          "SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query +
+              "%\" ORDER BY LENGTH(word) LIMIT 100");
+      while (rs.next()) {
+        expressionsRtn.add(new Expression(rs.getString("word")));
       }
     } catch (SQLException e) {
       // if the error message is "out of memory",

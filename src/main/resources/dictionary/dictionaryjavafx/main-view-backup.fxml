@@ -5,31 +5,21 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.web.WebView?>
+<?import javafx.scene.layout.HBox?>
 
-<GridPane prefHeight="600.0" prefWidth="900.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dictionary.dictionaryjavafx.DictionaryController">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" percentWidth="27.0" prefWidth="200.0" />
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="73.0" prefWidth="100.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-  </rowConstraints>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dictionary.dictionaryjavafx.DictionaryController">
    <children>
-      <AnchorPane prefHeight="600.0" prefWidth="250.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+      <AnchorPane prefHeight="600.0" prefWidth="250.0">
          <children>
             <TextField id="searchInput" fx:id="searchInput" layoutY="2.0" prefHeight="40.0" prefWidth="250.0" promptText="Search" style="-fx-border-color: #999; -fx-background-radius: 0; -fx-border-width: 0;" styleClass="input" stylesheets="@style.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <ListView fx:id="wordListView" fixedCellSize="30.0" layoutY="40.0" prefHeight="560.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" />
+            <ListView fx:id="wordListView" fixedCellSize="30.0" layoutY="40.0" prefHeight="560.0" prefWidth="250.0" />
          </children>
       </AnchorPane>
-      <AnchorPane prefHeight="600.0" prefWidth="650.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+      <AnchorPane layoutX="250.0" prefHeight="600.0" prefWidth="650.0">
          <children>
-            <ToolBar prefHeight="40.0" prefWidth="650.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ToolBar prefHeight="40.0" prefWidth="650.0">
               <items>
                 <Button id="btn__search" fx:id="btnSearch" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Search" />
                   <Button id="btn__ggApi" fx:id="btnGoogleScriptApi" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="API Google" />
@@ -40,8 +30,8 @@
                   <Button fx:id="btnDelete" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Delete" />
               </items>
             </ToolBar>
-            <WebView fx:id="webView" layoutY="40.0" prefHeight="560.0" prefWidth="650.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" />
+            <WebView fx:id="webView" layoutY="40.0" prefHeight="560.0" prefWidth="650.0" />
          </children>
       </AnchorPane>
    </children>
-</GridPane>
+</AnchorPane>
