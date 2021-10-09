@@ -42,10 +42,10 @@ public class DatabaseModel {
     ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
     try {
       openConnection();
-      ResultSet rs = statement.executeQuery("SELECT word, pronunciation, meaning FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY word");
+      ResultSet rs = statement.executeQuery("SELECT * FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY word");
       while (rs.next()) {
         expressionsRtn.add(new Expression(rs.getString("word"), rs.getString("pronunciation"),
-            rs.getString("meaning"), true));
+            rs.getString("meaning"), true, rs.getLong("created_at"), rs.getLong("last_modified")));
       }
     } catch (SQLException e) {
       System.err.println(e.getMessage());
@@ -81,10 +81,10 @@ public class DatabaseModel {
 //    }
 
     //list view not on init because you don't want user added expressions to always stay on top
-    if(!Objects.equals(query, "")) {
-      Comparator<Expression> expressionComparator = Comparator.comparing(Expression::getExpression);
-      expressionsRtn.sort(expressionComparator);
-    }
+//    if(!Objects.equals(query, "")) {
+//      Comparator<Expression> expressionComparator = Comparator.comparing(Expression::getExpression);
+//      expressionsRtn.sort(expressionComparator);
+//    }
 
     return expressionsRtn;
   }
@@ -160,8 +160,6 @@ public class DatabaseModel {
       pstm.setLong(6, unixTime);
       pstm.executeUpdate();
 
-    } catch (SQLException e) {
-      throw e;
     } finally {
       closeConnection();
     }

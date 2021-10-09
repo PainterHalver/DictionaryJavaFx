@@ -5,14 +5,25 @@ public class Expression {
   private String expression;
   private String pronunciation;
   private String meaning;
+  private long createdAt;
+  private long lastModified;
 
   private boolean userCreated = false;
 
-  Expression (String expression, String pronunciation, String meaning, Boolean userCreated) {
+  public Expression (String expression, String pronunciation, String meaning, Boolean userCreated) {
     this.expression = expression;
     this.userCreated = userCreated;
     this.pronunciation = pronunciation;
     this.meaning = meaning;
+  }
+
+  public Expression(String expression, String pronunciation, String meaning, Boolean userCreated, long createdAt, long lastModified) {
+    this.expression = expression;
+    this.userCreated = userCreated;
+    this.pronunciation = pronunciation;
+    this.meaning = meaning;
+    this.createdAt  = createdAt;
+    this.lastModified = lastModified;
   }
 
   Expression (String expression, Boolean userCreated) {
@@ -38,6 +49,22 @@ public class Expression {
 
   public boolean isUserCreated() {
     return userCreated;
+  }
+
+  public long getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(long createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public long getLastModified() {
+    return lastModified;
+  }
+
+  public void setLastModified(long lastModified) {
+    this.lastModified = lastModified;
   }
 
   @Override

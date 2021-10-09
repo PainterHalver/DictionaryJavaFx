@@ -3,6 +3,7 @@ package dictionary.dictionaryjavafx;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -10,7 +11,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -71,6 +71,39 @@ public class WordEditController implements Initializable {
     meaningInput.setText(e.getMeaning());
   }
 
+  //COMPARATORS
+  Comparator<Expression> byName = new Comparator<Expression>() {
+    @Override
+    public int compare(Expression e1, Expression e2) {
+      return e1.getExpression().compareTo(e2.getExpression());
+    }
+  };
+
+  Comparator<Expression> byCreatedDate = new Comparator<Expression>() {
+    @Override
+    public int compare(Expression e1, Expression e2) {
+      return e1.getCreatedAt() < e2.getCreatedAt() ? 1 : -1;
+    }
+  };
+
+  Comparator<Expression> byLastModified = new Comparator<Expression>() {
+    @Override
+    public int compare(Expression e1, Expression e2) {
+      return e1.getLastModified() < e2.getLastModified() ? 1 : -1;
+    }
+  };
+
+  private void sortList() {
+    if(sortComboBox.getSelectionModel().getSelectedItem() == "Name") {
+      userListView.getItems().sort(byName);
+    } else if (sortComboBox.getSelectionModel().getSelectedItem() == "Created Date") {
+      userListView.getItems().sort(byCreatedDate);
+    } else if (sortComboBox.getSelectionModel().getSelectedItem() == "Last Modified") {
+      userListView.getItems().sort(byLastModified);
+    }
+  }
+
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     WebEngine previewWebEngine = previewWebview.getEngine();
@@ -111,7 +144,12 @@ public class WordEditController implements Initializable {
             "Last Modified"
         );
     sortComboBox.getItems().addAll(sortOptions);
-    sortComboBox.getSelectionModel().selectFirst();
+    sortComboBox.getSelectionModel().select("Last Modified");
+    sortList();
+    sortComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, o, t1) -> {
+      sortList();
+    });
+
 
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
@@ -124,6 +162,9 @@ public class WordEditController implements Initializable {
 
       // 2. Query words then add to list view
       userListView.setItems(DatabaseModel.userExpressionsQuery(searchInput.getText()));
+
+      // 3. Sort list
+      sortList();
     });
 
     // PICK A WORD IN LISTVIEW EVENT HANDLER
@@ -164,9 +205,11 @@ public class WordEditController implements Initializable {
         DatabaseModel.addExpression(word,pronunciationInput.getText(),meaningInput.getText());
       // 2. Rerender userListView
         userListView.setItems(DatabaseModel.userExpressionsQuery(searchInput.getText()));
-      // 3. Rerender webengine so that user knows word is ADDED
+        // 3. Sort list
+        sortList();
+      // 4. Rerender webengine so that user knows word is ADDED
         previewWebEngine.loadContent("<h3>ADDED: " + word + "</h3>");
-      // 4. Clear input fields
+      // 5. Clear input fields
         clearInput();
       } catch (SQLException e) {
         // code 19: duplicated word
@@ -199,6 +242,8 @@ public class WordEditController implements Initializable {
         // 5. Disable the buttons
         btnDelete.setDisable(true);
         btnUpdate.setDisable(true);
+        // 6. Sort list
+        sortList();
       }
     });
 
@@ -215,6 +260,8 @@ public class WordEditController implements Initializable {
           // 4. Disable buttons
           btnUpdate.setDisable(true);
           btnDelete.setDisable(true);
+          // 5. Sort list
+          sortList();
 
         } catch (SQLException e) {
           Alert alert = new Alert(Alert.AlertType.ERROR);
