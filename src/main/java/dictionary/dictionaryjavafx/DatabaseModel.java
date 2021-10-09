@@ -42,7 +42,7 @@ public class DatabaseModel {
     ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
     try {
       openConnection();
-      ResultSet rs = statement.executeQuery("SELECT word, pronunciation, meaning FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY LENGTH(word) LIMIT 100");
+      ResultSet rs = statement.executeQuery("SELECT word, pronunciation, meaning FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY word");
       while (rs.next()) {
         expressionsRtn.add(new Expression(rs.getString("word"), rs.getString("pronunciation"),
             rs.getString("meaning"), true));

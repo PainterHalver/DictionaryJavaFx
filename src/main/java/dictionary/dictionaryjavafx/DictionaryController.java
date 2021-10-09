@@ -179,6 +179,11 @@ public class DictionaryController implements Initializable {
       FXMLLoader fxmlLoader = new FXMLLoader(DictionaryApplication.class.getResource("word-edit-view.fxml"));
       Scene editScene;
       Stage editStage = new Stage();
+
+      // Send current Expression to Edit view
+      ExpressionHolder holder  = ExpressionHolder.getInstance();
+      holder.setExpression(query);
+
       try {
         editScene = new Scene(fxmlLoader.load(), 600, 400);
         editStage.setTitle("Edit");

@@ -65,13 +65,44 @@ public class WordEditController implements Initializable {
     meaningInput.setText("");
   }
 
+  private void setInput(Expression e) {
+    wordInput.setText(e.getExpression());
+    pronunciationInput.setText(e.getPronunciation());
+    meaningInput.setText(e.getMeaning());
+  }
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    // THREAD btn DELETE
-    btnDelete.setDisable(true);
-
-
     WebEngine previewWebEngine = previewWebview.getEngine();
+    ObservableList<Expression> fullUserData = DatabaseModel.userExpressionsQuery("");
+
+    // INIT IF USER ADDED WORD IS SELECTED IN WORD LIST VIEW
+    ExpressionHolder holder = ExpressionHolder.getInstance();
+    Expression exp = holder.getExpression();
+
+    // 1. init buttons
+    btnDelete.setDisable(!exp.isUserCreated());
+    btnUpdate.setDisable(!exp.isUserCreated());
+
+    // 2. set current exp (so that it can be editted)
+    currentExpression = exp;
+
+    // 3. init list view and field
+    if(exp.isUserCreated()) {
+      setInput(exp);
+      userListView.setItems(fullUserData);
+      for (int i =0; i < fullUserData.size(); ++i) {
+        if (Objects.equals(fullUserData.get(i).getExpression(), exp.getExpression())) {
+          userListView.scrollTo(i);
+          userListView.getSelectionModel().select(i);
+          break;
+        }
+      }
+      previewWebEngine.loadContent(DatabaseModel.htmlQuery(exp));
+    } else {
+      // INIT USER LIST VIEW
+      userListView.setItems(fullUserData);
+    }
 
     // INIT SORT COMBOBOX
     ObservableList<String> sortOptions = FXCollections.observableArrayList(
@@ -82,13 +113,11 @@ public class WordEditController implements Initializable {
     sortComboBox.getItems().addAll(sortOptions);
     sortComboBox.getSelectionModel().selectFirst();
 
-    // INIT USER LIST VIEW
-    userListView.setItems(DatabaseModel.userExpressionsQuery(""));
-
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
-      //0. Disable the Delete button
+      //0. Disable the buttons
       btnDelete.setDisable(true);
+      btnUpdate.setDisable(true);
 
       // 1. Clear list view
       userListView.getItems().clear();
@@ -106,12 +135,11 @@ public class WordEditController implements Initializable {
 
             currentExpression = (Expression) userListView.getSelectionModel().getSelectedItem();
             // load expression to web engine and input fields
+            setInput(currentExpression);
             previewWebEngine.loadContent(DatabaseModel.htmlQuery(currentExpression));
-            wordInput.setText(currentExpression.getExpression());
-            pronunciationInput.setText(currentExpression.getPronunciation());
-            meaningInput.setText(currentExpression.getMeaning());
 
             btnDelete.setDisable(!currentExpression.isUserCreated());
+            btnUpdate.setDisable(!currentExpression.isUserCreated());
           }
         });
 
@@ -168,6 +196,9 @@ public class WordEditController implements Initializable {
         previewWebEngine.loadContent("<h3>Deleted: " + word + "</h3>");
         // 4. Clear input fields
         clearInput();
+        // 5. Disable the buttons
+        btnDelete.setDisable(true);
+        btnUpdate.setDisable(true);
       }
     });
 
@@ -181,6 +212,10 @@ public class WordEditController implements Initializable {
           userListView.setItems(DatabaseModel.userExpressionsQuery(searchInput.getText()));
           // 3. Rerender webengine so that user knows word is ADDED
           previewWebEngine.loadContent("<h3>UPDATED</h3>");
+          // 4. Disable buttons
+          btnUpdate.setDisable(true);
+          btnDelete.setDisable(true);
+
         } catch (SQLException e) {
           Alert alert = new Alert(Alert.AlertType.ERROR);
           alert.setTitle("Error");
