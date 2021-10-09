@@ -12,5 +12,5 @@ TODO:
 - ~~responsive du chi la 1 it (low prio)~~
 - ~~view~~ (scene) cho phan them sua xoa (1 hay nhieu scene), link voi model
 - sort user created word (created date, last-modified date, alphabet) each has ASC and DESC (default la theo last modified)
-- add-view voi preview webview?
+- ~~add-view voi preview webview?~~
 - sua lai sort word trong main-view

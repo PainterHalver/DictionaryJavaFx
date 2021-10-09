@@ -25,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -182,9 +183,18 @@ public class DictionaryController implements Initializable {
         editScene = new Scene(fxmlLoader.load(), 600, 400);
         editStage.setTitle("Edit");
         editStage.setScene(editScene);
-        editStage.show();
+
+        // Block main window when edit view is openned
+        // https://stackoverflow.com/questions/46612307/how-to-block-a-main-window-in-javafx
+        editStage.initModality(Modality.APPLICATION_MODAL);
+        editStage.initOwner(btnEdit.getScene().getWindow());
+        editStage.showAndWait();
+
       } catch (IOException e) {
         e.printStackTrace();
+      } finally {
+        // Rerender word list view after editting
+        wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
       }
     });
 

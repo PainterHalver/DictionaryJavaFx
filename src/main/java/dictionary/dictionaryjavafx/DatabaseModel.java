@@ -120,17 +120,35 @@ public class DatabaseModel {
 
   public static String generateMarkup(String expression, String pronunciation, String meaning) {
     return "<h1>"
-        + expression+ "</h1><h3>/"
-        + pronunciation + "/</h3><p>"
+        + expression+ "</h1><h3>/<i>"
+        + pronunciation + "</i>/</h3><p>"
         + meaning + "</p>";
   }
 
-  public static void addExpression(String expression, String pronunciation, String meaning) {
+  public static boolean inUserDatabase(String s) {
+    ObservableList<Expression> userData = userExpressionsQuery(s);
+    for(Expression i : userData) {
+      if (Objects.equals(i.getExpression(), s)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * throw Exception de button Add tu xu ly.
+   */
+  public static void addExpression(String expression, String pronunciation, String meaning)
+      throws SQLException {
+    if (Objects.equals(expression, "")) {
+      throw new SQLException("Expression can not be empty!");
+    } else if (inUserDatabase(expression.trim())) {
+      throw new SQLException("Expression already exists in user database (duplicated)!");
+    }
     try {
       openConnection();
-      expression = expression.toLowerCase(Locale.ROOT);
       PreparedStatement pstm = connection.prepareStatement("INSERT INTO ua (word, meaning, pronunciation, html, created_at, last_modified) VALUES (?,?,?,?,?,?)");
-      pstm.setString(1,expression);
+      pstm.setString(1,expression.toLowerCase(Locale.ROOT).trim());
       pstm.setString(2,meaning);
       pstm.setString(3,pronunciation);
 
@@ -143,7 +161,7 @@ public class DatabaseModel {
       pstm.executeUpdate();
 
     } catch (SQLException e) {
-      System.err.println(e.getMessage());
+      throw e;
     } finally {
       closeConnection();
     }
@@ -160,14 +178,13 @@ public class DatabaseModel {
     }
   }
 
-  public static void editExpression(String oldExpression, String newExpression, String pronunciation, String meaning) {
+  public static void updateExpression(String oldExpression, String newExpression, String pronunciation, String meaning) throws SQLException {
     try {
       openConnection();
-      newExpression = newExpression.toLowerCase(Locale.ROOT);
       PreparedStatement pstm = connection.prepareStatement(
           "UPDATE ua SET word = ?, meaning = ?, pronunciation = ?, html = ?, last_modified = ? WHERE WORD = ?"
       );
-      pstm.setString(1, newExpression);
+      pstm.setString(1, newExpression.toLowerCase(Locale.ROOT).trim());
       pstm.setString(2, meaning);
       pstm.setString(3, pronunciation);
 
@@ -186,7 +203,4 @@ public class DatabaseModel {
     }
   }
 
-  public static void main(String[] args) {
-//    deleteExpression("test1");
-  }
 }
