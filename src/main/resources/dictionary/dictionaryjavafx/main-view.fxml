@@ -34,7 +34,6 @@
                 <Button id="btn__search" fx:id="btnSearch" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Search" />
                   <Button id="btn__ggApi" fx:id="btnGoogleScriptApi" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="API Google" />
                   <Button id="btn__ggTranslateWeb" fx:id="btnGgWebEngine" mnemonicParsing="false" styleClass="btn" text="GG Trans" />
-                  <Button fx:id="btnSpeak" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Speak" />
                   <Pane HBox.hgrow="ALWAYS" />
                   <Button fx:id="btnEdit" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Edit" />
                   <Button fx:id="btnDelete" mnemonicParsing="false" styleClass="btn" stylesheets="@style.css" text="Delete" />

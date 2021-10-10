@@ -71,7 +71,7 @@ public class DictionaryController implements Initializable {
       hbox.getChildren().addAll(label, pane, speakBtn);
       HBox.setHgrow(pane, Priority.ALWAYS);
       speakBtn.cursorProperty().setValue(Cursor.HAND);
-      speakBtn.setOnAction(event -> TtsModel.googleTss(lastItem.getExpression()));
+      speakBtn.setOnAction(event -> TtsModel.apiTTS(lastItem.getExpression(), Constants.GOOGLE_ENG_TTS_URL));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class DictionaryController implements Initializable {
         setGraphic(null);
       } else {
         lastItem = item;
-        label.setText(item!=null ? item.toString() : "aaaa");
+        label.setText(item!=null ? item.toString() : "");
         setGraphic(hbox);
       }
     }
@@ -149,19 +149,23 @@ public class DictionaryController implements Initializable {
 
     // NON-BLOCKING GOOGLE SCRIPT API CALL
     btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
-      //loaing text
-      webEngine.loadContent(Constants.GOOGLE_API_LOADING_TEXT);
-
-      Thread testThread = new Thread(() -> {
-//        query.setExpression(searchInput.getText());
-        try {
-          String outText = GoogleScriptModel.translate("en", "vi", searchInput.getText());
-          Platform.runLater(() -> webEngine.loadContent("<p>" + outText + "</p>")); // p tag for new line if > viewport width
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      });
-      testThread.start();
+      FXMLLoader fxmlLoader = new FXMLLoader(DictionaryApplication.class.getResource("translate-view.fxml"));
+      Scene editScene;
+      Stage editStage = new Stage();
+      ExpressionHolder holder  = ExpressionHolder.getInstance();
+      holder.setExpression(new Expression(searchInput.getText()));
+      try {
+        editScene = new Scene(fxmlLoader.load(), 350, 400);
+        editStage.setTitle("Google Script API");
+        editStage.setScene(editScene);
+        editStage.initModality(Modality.APPLICATION_MODAL);
+        editStage.initOwner(btnGoogleScriptApi.getScene().getWindow());
+        editStage.showAndWait();
+      } catch (IOException e) {
+        e.printStackTrace();
+      } finally {
+        wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
+      }
     });
     
     // GOOGLE TRANSLATE WEBENGINE
@@ -170,9 +174,6 @@ public class DictionaryController implements Initializable {
       String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(searchInput.getText(), StandardCharsets.UTF_8) + "&op=translate";
       webEngine.load(urlToGo);
     });
-
-    // TEXT TO SPEAK
-    btnSpeak.setOnMouseClicked(mouseEvent -> TtsModel.googleTss(searchInput.getText()));
 
     //EDIT BUTTON
     btnEdit.setOnMouseClicked(mouseEvent -> {

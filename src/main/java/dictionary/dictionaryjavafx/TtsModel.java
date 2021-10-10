@@ -21,7 +21,7 @@ public class TtsModel {
   /**
    * https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=en&q=hello
    */
-  public static void googleTss(String query) {
+  public static void apiTTS(String query, String baseURL) {
     if (Objects.equals(query, "")) return;
 //    Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 //    for (Thread x : threadSet) {
@@ -30,7 +30,7 @@ public class TtsModel {
     Thread testThread = new Thread(() -> {
       try {
         AudioInputStream in = AudioSystem.getAudioInputStream(
-            new URL(Constants.GOOGLE_TTS_URL + URLEncoder.encode(query, StandardCharsets.UTF_8)));
+            new URL(baseURL + URLEncoder.encode(query, StandardCharsets.UTF_8)));
         AudioFormat baseFormat = in.getFormat();
         AudioFormat decodedFormat = new AudioFormat(
             AudioFormat.Encoding.PCM_SIGNED,
