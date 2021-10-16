@@ -1,6 +1,8 @@
 package dictionary.dictionaryjavafx;
 
 public class ExpressionHolder {
+  // This is the so-called Singleton class
+
   private Expression expression;
   private final static ExpressionHolder INSTANCE = new ExpressionHolder();
 

@@ -150,17 +150,19 @@ public class DictionaryController implements Initializable {
     // NON-BLOCKING GOOGLE SCRIPT API CALL
     btnGoogleScriptApi.setOnMouseClicked(mouseEvent -> {
       FXMLLoader fxmlLoader = new FXMLLoader(DictionaryApplication.class.getResource("translate-view.fxml"));
-      Scene editScene;
-      Stage editStage = new Stage();
+      Scene translateScene;
+      Stage translateStage = new Stage();
       ExpressionHolder holder  = ExpressionHolder.getInstance();
       holder.setExpression(new Expression(searchInput.getText()));
       try {
-        editScene = new Scene(fxmlLoader.load(), 350, 400);
-        editStage.setTitle("Google Script API");
-        editStage.setScene(editScene);
-        editStage.initModality(Modality.APPLICATION_MODAL);
-        editStage.initOwner(btnGoogleScriptApi.getScene().getWindow());
-        editStage.showAndWait();
+        translateScene = new Scene(fxmlLoader.load(), 350, 400);
+        translateStage.setTitle("Google Script API");
+        translateStage.setMinWidth(300);
+        translateStage.setMinHeight(350);
+        translateStage.setScene(translateScene);
+        translateStage.initModality(Modality.APPLICATION_MODAL);
+        translateStage.initOwner(btnGoogleScriptApi.getScene().getWindow());
+        translateStage.showAndWait();
       } catch (IOException e) {
         e.printStackTrace();
       } finally {
@@ -189,6 +191,8 @@ public class DictionaryController implements Initializable {
         editScene = new Scene(fxmlLoader.load(), 600, 400);
         editStage.setTitle("Edit");
         editStage.setScene(editScene);
+        editStage.setMinWidth(600);
+        editStage.setMinHeight(400);
 
         // Block main window when edit view is openned
         // https://stackoverflow.com/questions/46612307/how-to-block-a-main-window-in-javafx

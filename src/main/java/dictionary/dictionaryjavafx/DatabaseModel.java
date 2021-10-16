@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Objects;
@@ -42,7 +43,10 @@ public class DatabaseModel {
     ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
     try {
       openConnection();
-      ResultSet rs = statement.executeQuery("SELECT * FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY word");
+//      ResultSet rs = statement.executeQuery("SELECT * FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY word");
+      PreparedStatement pstm = connection.prepareStatement("SELECT * FROM ua WHERE word LIKE ? ORDER BY word");
+      pstm.setString(1, query + "%");
+      ResultSet rs = pstm.executeQuery();
       while (rs.next()) {
         expressionsRtn.add(new Expression(rs.getString("word"), rs.getString("pronunciation"),
             rs.getString("meaning"), true, rs.getLong("created_at"), rs.getLong("last_modified")));
@@ -62,9 +66,12 @@ public class DatabaseModel {
     try {
       openConnection();
       // Query from old table
-      ResultSet rs = statement.executeQuery(
-          "SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query +
-              "%\" ORDER BY LENGTH(word) LIMIT 100");
+//      ResultSet rs = statement.executeQuery(
+//          "SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query +
+//              "%\" ORDER BY LENGTH(word) LIMIT 100");
+      PreparedStatement pstm = connection.prepareStatement("SELECT DISTINCT(word) FROM av WHERE word LIKE ? ORDER BY id, word LIMIT 100");
+      pstm.setString(1, query + "%");
+      ResultSet rs = pstm.executeQuery();
       while (rs.next()) {
         expressionsRtn.add(new Expression(rs.getString("word")));
       }
@@ -81,10 +88,19 @@ public class DatabaseModel {
 //    }
 
     //list view not on init because you don't want user added expressions to always stay on top
-//    if(!Objects.equals(query, "")) {
-//      Comparator<Expression> expressionComparator = Comparator.comparing(Expression::getExpression);
-//      expressionsRtn.sort(expressionComparator);
-//    }
+    if(!Objects.equals(query, "")) {
+      Collections.sort(expressionsRtn, new Comparator<Expression>() {
+        @Override
+        public int compare(Expression left, Expression right) {
+          String leftExp = left.getExpression();
+          String rightExp = right.getExpression();
+          if(leftExp.length() < rightExp.length()){
+            return -1;
+          }
+          return left.getExpression().compareTo(right.getExpression());
+        }
+      });
+    }
 
     return expressionsRtn;
   }
@@ -95,14 +111,20 @@ public class DatabaseModel {
       openConnection();
       String exp = expression.getExpression();
 
-      // statement for filtering stupid padding that cannot be trimmed with TRIM(word)
-      ResultSet rs = statement.executeQuery(
-          "SELECT html FROM "
-              + (expression.isUserCreated() ? "ua" : "av")
-              + " WHERE substr(word, -length('" + exp + "')) = \""
-              + exp
-              + "\" and substr(word, -length('" + exp + "') - 1, 1) NOT GLOB '[A-Za-z1-9. -]'");
+//       statement for filtering stupid padding that cannot be trimmed with TRIM(word)
+//      ResultSet rs = statement.executeQuery(
+//          "SELECT html FROM "
+//              + (expression.isUserCreated() ? "ua" : "av")
+//              + " WHERE substr(word, -length('" + exp + "')) = \""
+//              + exp
+//              + "\" and substr(word, -length(\"" + exp + "\") - 1, 1) NOT GLOB '[A-Za-z1-9. -]'");
 
+      PreparedStatement pstm = connection.prepareStatement("SELECT html FROM \""
+          + (expression.isUserCreated() ? "ua" : "av") + "\" WHERE substr(word, -length(?)) =  ?  and substr(word, -length(?) - 1, 1) NOT GLOB '[A-Za-z1-9. -]'");
+      pstm.setString(1, exp);
+      pstm.setString(2, exp);
+      pstm.setString(3, exp);
+      ResultSet rs = pstm.executeQuery();
       while (rs.next()) {
         html.append(rs.getString("html"));
       }
@@ -168,7 +190,10 @@ public class DatabaseModel {
   public static void deleteExpression(String expression) {
     try {
       openConnection();
-      statement.executeUpdate("DELETE FROM ua WHERE WORD = '" + expression + "'");
+//      statement.executeUpdate("DELETE FROM ua WHERE WORD = '" + expression + "'");
+      PreparedStatement pstm = connection.prepareStatement("DELETE FROM ua WHERE WORD = ?");
+      pstm.setString(1, expression);
+      pstm.executeUpdate();
     } catch (SQLException e) {
       System.err.println(e.getMessage());
     } finally {
@@ -200,5 +225,4 @@ public class DatabaseModel {
       closeConnection();
     }
   }
-
 }

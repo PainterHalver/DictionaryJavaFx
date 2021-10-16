@@ -72,21 +72,21 @@ public class WordEditController implements Initializable {
   }
 
   //COMPARATORS
-  Comparator<Expression> byName = new Comparator<Expression>() {
+  final Comparator<Expression> BY_NAME = new Comparator<Expression>() {
     @Override
     public int compare(Expression e1, Expression e2) {
       return e1.getExpression().compareTo(e2.getExpression());
     }
   };
 
-  Comparator<Expression> byCreatedDate = new Comparator<Expression>() {
+  final Comparator<Expression> BY_CREATED_DATE = new Comparator<Expression>() {
     @Override
     public int compare(Expression e1, Expression e2) {
       return e1.getCreatedAt() < e2.getCreatedAt() ? 1 : -1;
     }
   };
 
-  Comparator<Expression> byLastModified = new Comparator<Expression>() {
+  final Comparator<Expression> BY_LAST_MODIFIED = new Comparator<Expression>() {
     @Override
     public int compare(Expression e1, Expression e2) {
       return e1.getLastModified() < e2.getLastModified() ? 1 : -1;
@@ -95,11 +95,11 @@ public class WordEditController implements Initializable {
 
   private void sortList() {
     if(sortComboBox.getSelectionModel().getSelectedItem() == "Name") {
-      userListView.getItems().sort(byName);
+      userListView.getItems().sort(BY_NAME);
     } else if (sortComboBox.getSelectionModel().getSelectedItem() == "Created Date") {
-      userListView.getItems().sort(byCreatedDate);
+      userListView.getItems().sort(BY_CREATED_DATE);
     } else if (sortComboBox.getSelectionModel().getSelectedItem() == "Last Modified") {
-      userListView.getItems().sort(byLastModified);
+      userListView.getItems().sort(BY_LAST_MODIFIED);
     }
   }
 

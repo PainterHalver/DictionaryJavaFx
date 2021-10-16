@@ -13,6 +13,8 @@ public class DictionaryApplication extends Application {
     FXMLLoader fxmlLoader = new FXMLLoader(DictionaryApplication.class.getResource("main-view.fxml"));
     Scene scene = new Scene(fxmlLoader.load(), 900, 600);
     stage.setTitle("Dictionary JavaFx!");
+    stage.setMinWidth(650);
+    stage.setMinHeight(400);
     stage.setScene(scene);
     stage.show();
   }
