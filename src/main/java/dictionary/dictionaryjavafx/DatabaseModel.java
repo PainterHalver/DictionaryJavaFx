@@ -59,21 +59,41 @@ public class DatabaseModel {
     return expressionsRtn;
   }
 
+  public static ObservableList<Expression> favoriteExpressionsQuery(String query) {
+    ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
+    try {
+      openConnection();
+//      ResultSet rs = statement.executeQuery("SELECT * FROM ua WHERE word LIKE \"" + query + "%\" ORDER BY word");
+      PreparedStatement pstm = connection.prepareStatement("SELECT * FROM av JOIN favourite ON av.id = favourite.id WHERE word LIKE ?");
+      pstm.setString(1, query + "%");
+      ResultSet rs = pstm.executeQuery();
+      while (rs.next()) {
+        expressionsRtn.add(new Expression(rs.getString("word"), true, rs.getString("id")));
+      }
+    } catch (SQLException e) {
+      System.err.println(e.getMessage());
+    } finally {
+      closeConnection();
+    }
+    return expressionsRtn;
+  }
+
   public static ObservableList<Expression> allExpressionsQuery(String query) {
     ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
     // Query from user added table
     expressionsRtn.addAll(userExpressionsQuery(query));
+    expressionsRtn.addAll(favoriteExpressionsQuery(query));
     try {
       openConnection();
       // Query from old table
 //      ResultSet rs = statement.executeQuery(
 //          "SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query +
 //              "%\" ORDER BY LENGTH(word) LIMIT 100");
-      PreparedStatement pstm = connection.prepareStatement("SELECT DISTINCT(word) FROM av WHERE word LIKE ? ORDER BY id, word LIMIT 100");
+      PreparedStatement pstm = connection.prepareStatement("SELECT DISTINCT(word), id FROM av where id not in (SELECT id from favourite) AND word LIKE ? LIMIT 100");
       pstm.setString(1, query + "%");
       ResultSet rs = pstm.executeQuery();
       while (rs.next()) {
-        expressionsRtn.add(new Expression(rs.getString("word")));
+        expressionsRtn.add(new Expression(rs.getString("word"), rs.getString("id")));
       }
     } catch (SQLException e) {
       // if the error message is "out of memory",
@@ -87,20 +107,20 @@ public class DatabaseModel {
 //      expressionsRtn.add(new Expression("NO EXPRESSIONS FOUND FOR THIS QUERY"));
 //    }
 
-    //list view not on init because you don't want user added expressions to always stay on top
-    if(!Objects.equals(query, "")) {
-      Collections.sort(expressionsRtn, new Comparator<Expression>() {
+      expressionsRtn.sort(new Comparator<Expression>() {
         @Override
         public int compare(Expression left, Expression right) {
-          String leftExp = left.getExpression();
-          String rightExp = right.getExpression();
-          if(leftExp.length() < rightExp.length()){
-            return -1;
-          }
+//          String leftExp = left.getExpression();
+//          String rightExp = right.getExpression();
+//          if (leftExp.length() < rightExp.length()) {
+//            return -1;
+//          }
+//          if (leftExp.length() > rightExp.length()) {
+//            return 1;
+//          }
           return left.getExpression().compareTo(right.getExpression());
         }
       });
-    }
 
     return expressionsRtn;
   }
@@ -138,6 +158,32 @@ public class DatabaseModel {
     return html.toString().equals("")
         ? Constants.NO_EXPRESSIONS_FOUND
         : html.toString();
+  }
+
+  public static void addFavourite(String id) {
+    try {
+      openConnection();
+      PreparedStatement pstm = connection.prepareStatement("INSERT INTO favourite (id) values (?)");
+      pstm.setString(1, id);
+      pstm.executeUpdate();
+    } catch (SQLException e) {
+      System.err.println(e.getMessage());
+    } finally {
+      closeConnection();
+    }
+  }
+
+  public static void deleteFavourite(String id) {
+    try {
+      openConnection();
+      PreparedStatement pstm = connection.prepareStatement("DELETE FROM favourite WHERE id = ?");
+      pstm.setString(1, id);
+      pstm.executeUpdate();
+    } catch (SQLException e) {
+      System.err.println(e.getMessage());
+    } finally {
+      closeConnection();
+    }
   }
 
   public static String generateMarkup(String expression, String pronunciation, String meaning) {

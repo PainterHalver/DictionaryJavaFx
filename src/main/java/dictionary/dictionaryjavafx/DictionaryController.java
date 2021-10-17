@@ -8,18 +8,23 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -30,6 +35,9 @@ import javafx.stage.Stage;
 
 
 public class DictionaryController implements Initializable {
+  @FXML
+  private ComboBox filterComboBox;
+
   @FXML
   private Button btnSearch;
 
@@ -57,21 +65,46 @@ public class DictionaryController implements Initializable {
   @FXML
   private ListView<Expression> wordListView;
 
-  Expression query = new Expression(Constants.INIT_QUERY);
 
-  static class XCell extends ListCell<Expression> {
+  Expression query = new Expression(Constants.INIT_QUERY);
+  String currentListType = "All";
+
+
+  private void setList(String currentListType) {
+    wordListView.setCellFactory(param -> new XCell());
+    switch (currentListType) {
+      case "All" -> wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
+      case "User Created" -> wordListView.setItems(
+          DatabaseModel.userExpressionsQuery(searchInput.getText()));
+      case "Favorite" -> wordListView.setItems(
+          DatabaseModel.favoriteExpressionsQuery(searchInput.getText()));
+    }
+  }
+
+  class XCell extends ListCell<Expression> {
     HBox hbox = new HBox();
     Label label = new Label("(empty)");
     Pane pane = new Pane();
     Button speakBtn = new Button("\uD83D\uDD0A"); //speaker
+    Label user = new Label("👤 ");
+    ToggleButton favBtn = new ToggleButton("⭐");
     Expression lastItem;
 
     public XCell() {
       super();
       hbox.getChildren().addAll(label, pane, speakBtn);
       HBox.setHgrow(pane, Priority.ALWAYS);
+      hbox.setAlignment(Pos.CENTER);
       speakBtn.cursorProperty().setValue(Cursor.HAND);
       speakBtn.setOnAction(event -> TtsModel.apiTTS(lastItem.getExpression(), Constants.GOOGLE_ENG_TTS_URL));
+      favBtn.setOnAction(event -> {
+        if (favBtn.isSelected()) {
+          DatabaseModel.addFavourite(lastItem.getId());
+        } else if (!favBtn.isSelected()) {
+          DatabaseModel.deleteFavourite(lastItem.getId());
+        }
+        setList(currentListType);
+      });
     }
 
     @Override
@@ -84,10 +117,24 @@ public class DictionaryController implements Initializable {
       } else {
         lastItem = item;
         label.setText(item!=null ? item.toString() : "");
+        assert item != null;
+        if (item.isUserCreated()) {
+          hbox.getChildren().clear();
+          hbox.getChildren().addAll(label, pane, user, speakBtn);
+        } else if (item.isFavourite()) {
+          hbox.getChildren().clear();
+          favBtn.setSelected(true);
+          hbox.getChildren().addAll(label, pane, favBtn, speakBtn);
+        } else {
+          hbox.getChildren().clear();
+          favBtn.setSelected(false);
+          hbox.getChildren().addAll(label, pane,favBtn, speakBtn);
+        }
         setGraphic(hbox);
       }
     }
   }
+
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -102,6 +149,19 @@ public class DictionaryController implements Initializable {
     wordListView.setItems(DatabaseModel.allExpressionsQuery(""));
     wordListView.setCellFactory(param -> new XCell());
 
+    // INIT SORT FILTER BOX
+    ObservableList<String> filterOptions = FXCollections.observableArrayList(
+        "All",
+        "User Created",
+        "Favorite"
+    );
+    filterComboBox.getItems().addAll(filterOptions);
+    filterComboBox.getSelectionModel().select(currentListType);
+    filterComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, o, t1) -> {
+      currentListType = (String) filterComboBox.getSelectionModel().getSelectedItem();
+      setList(currentListType);
+    });
+
     // TYPE IN SEARCH INPUT
     searchInput.setOnKeyTyped(keyEvent -> {
 
@@ -112,7 +172,7 @@ public class DictionaryController implements Initializable {
       wordListView.getItems().clear();
 
       // 2. Query words then add to list view
-      wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
+      setList(currentListType);
     });
 
     // PICK A WORD IN LISTVIEW EVENT HANDLER
@@ -166,7 +226,7 @@ public class DictionaryController implements Initializable {
       } catch (IOException e) {
         e.printStackTrace();
       } finally {
-        wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
+        setList(currentListType);
       }
     });
     
@@ -204,7 +264,7 @@ public class DictionaryController implements Initializable {
         e.printStackTrace();
       } finally {
         // Rerender word list view after editting
-        wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
+        setList(currentListType);
       }
     });
 
@@ -222,9 +282,11 @@ public class DictionaryController implements Initializable {
         // 1. Delete the word
         DatabaseModel.deleteExpression(word);
         // 2. Reload the word list view
-        wordListView.setItems(DatabaseModel.allExpressionsQuery(searchInput.getText()));
+        setList(currentListType);
         // 3. Rerender webengine so that user knows word is deleted
         webEngine.loadContent("<h1>Deleted: " + word + "</h1>");
+        // 4. Set current exp back to ''
+        query = new Expression("");
       }
     });
   }

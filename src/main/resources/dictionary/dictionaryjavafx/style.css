@@ -2,8 +2,12 @@
     -fx-focus-color: transparent;
 }
 
-.button {
+.button, .toggle-button {
     -fx-cursor: hand;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #0073e6;
 }
 
 /*

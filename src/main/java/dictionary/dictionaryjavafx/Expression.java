@@ -5,10 +5,12 @@ public class Expression {
   private String expression;
   private String pronunciation;
   private String meaning;
+  private String id;
   private long createdAt;
   private long lastModified;
 
   private boolean userCreated = false;
+  private boolean favourite = false;
 
   public Expression (String expression, String pronunciation, String meaning, Boolean userCreated) {
     this.expression = expression;
@@ -26,13 +28,23 @@ public class Expression {
     this.lastModified = lastModified;
   }
 
-  Expression (String expression, Boolean userCreated) {
+  Expression (String expression, Boolean favourite, String id) {
     this.expression = expression;
-    this.userCreated = userCreated;
+    this.favourite = favourite;
+    this.id = id;
+  }
+
+  Expression (String expression, String id) {
+    this.expression = expression;
+    this.id = id;
   }
 
   Expression (String expression) {
     this.expression = expression;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public String getExpression() {
@@ -67,9 +79,14 @@ public class Expression {
     this.lastModified = lastModified;
   }
 
+  public boolean isFavourite() {
+    return favourite;
+  }
+
   @Override
   public String toString() {
-    return (userCreated ? "👤 ": "") + getExpression();
+//    return (favourite ? "⭐ ": "") + (userCreated ? "👤 ": "") + getExpression();
+    return this.expression;
   }
 
   /*

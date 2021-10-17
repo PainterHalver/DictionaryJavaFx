@@ -133,7 +133,6 @@ public class WordEditController implements Initializable {
       }
       previewWebEngine.loadContent(DatabaseModel.htmlQuery(exp));
     } else {
-      // INIT USER LIST VIEW
       userListView.setItems(fullUserData);
     }
 
