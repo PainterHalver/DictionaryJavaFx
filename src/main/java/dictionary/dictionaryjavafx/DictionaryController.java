@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -48,9 +47,6 @@ public class DictionaryController implements Initializable {
   private Button btnGgWebEngine;
 
   @FXML
-  private Button btnSpeak;
-
-  @FXML
   private Button btnEdit;
 
   @FXML
@@ -86,7 +82,7 @@ public class DictionaryController implements Initializable {
     Label label = new Label("(empty)");
     Pane pane = new Pane();
     Button speakBtn = new Button("\uD83D\uDD0A"); //speaker
-    Label user = new Label("👤 ");
+    Button userBtn = new Button("👤");
     ToggleButton favBtn = new ToggleButton("⭐");
     Expression lastItem;
 
@@ -95,7 +91,10 @@ public class DictionaryController implements Initializable {
       hbox.getChildren().addAll(label, pane, speakBtn);
       HBox.setHgrow(pane, Priority.ALWAYS);
       hbox.setAlignment(Pos.CENTER);
-      speakBtn.cursorProperty().setValue(Cursor.HAND);
+      speakBtn.getStyleClass().add("btn-list-speak");
+      favBtn.getStyleClass().add("btn-fav");
+      userBtn.getStyleClass().add("btn-user");
+      userBtn.setDisable(true);
       speakBtn.setOnAction(event -> TtsModel.apiTTS(lastItem.getExpression(), Constants.GOOGLE_ENG_TTS_URL));
       favBtn.setOnAction(event -> {
         if (favBtn.isSelected()) {
@@ -120,7 +119,7 @@ public class DictionaryController implements Initializable {
         assert item != null;
         if (item.isUserCreated()) {
           hbox.getChildren().clear();
-          hbox.getChildren().addAll(label, pane, user, speakBtn);
+          hbox.getChildren().addAll(label, pane, userBtn, speakBtn);
         } else if (item.isFavourite()) {
           hbox.getChildren().clear();
           favBtn.setSelected(true);
@@ -231,11 +230,11 @@ public class DictionaryController implements Initializable {
     });
     
     // GOOGLE TRANSLATE WEBENGINE
-    btnGgWebEngine.setOnMouseClicked(mouseEvent -> {
-//      query.setExpression(searchInput.getText());
-      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(searchInput.getText(), StandardCharsets.UTF_8) + "&op=translate";
-      webEngine.load(urlToGo);
-    });
+//    btnGgWebEngine.setOnMouseClicked(mouseEvent -> {
+////      query.setExpression(searchInput.getText());
+//      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(searchInput.getText(), StandardCharsets.UTF_8) + "&op=translate";
+//      webEngine.load(urlToGo);
+//    });
 
     //EDIT BUTTON
     btnEdit.setOnMouseClicked(mouseEvent -> {

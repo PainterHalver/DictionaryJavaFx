@@ -255,7 +255,7 @@ public class WordEditController implements Initializable {
           // 2. Rerender userListView
           userListView.setItems(DatabaseModel.userExpressionsQuery(searchInput.getText()));
           // 3. Rerender webengine so that user knows word is ADDED
-          previewWebEngine.loadContent("<h3>UPDATED</h3>");
+          previewWebEngine.loadContent("<h3>UPDATED: " + oldExpression + "</h3>");
           // 4. Disable buttons
           btnUpdate.setDisable(true);
           btnDelete.setDisable(true);

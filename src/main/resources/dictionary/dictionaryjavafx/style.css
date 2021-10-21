@@ -2,13 +2,37 @@
     -fx-focus-color: transparent;
 }
 
-.button, .toggle-button {
+.button, .toggle-button{
     -fx-cursor: hand;
+    /*-fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;*/
+    /*-fx-background-color: transparent;*/
+    /*-fx-background-insets: 0 0 0 0, 0, 0, 0;*/
+    /*-fx-border-width: 0 0 0 0, 0, 0, 0;*/
 }
 
 .toggle-button:selected {
-    -fx-background-color: #0073e6;
+    -fx-background-color: #33B6FF;
+    -fx-text-fill: #fff;
 }
+
+.btn-list-speak {
+    -fx-background-radius: 100 !IMPORTANT;
+}
+
+.btn-fav, .btn-user {
+    -fx-background-radius: 100 !IMPORTANT;
+    -fx-padding: 7px 10px !IMPORTANT;
+    -fx-border-insets: 5px !IMPORTANT;
+    -fx-background-insets: 5px !IMPORTANT;
+    -fx-font-size: 14;
+}
+
+.btn-user, .btn-user:disabled {
+    -fx-opacity: 1.0;
+    -fx-background-color: #a86932;
+    -fx-text-fill: #fff;
+}
+
 
 /*
 .btn:focused {
