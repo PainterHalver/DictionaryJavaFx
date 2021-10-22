@@ -2,12 +2,16 @@ package dictionary.dictionaryjavafx;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 
 public class TranslateViewController implements Initializable {
@@ -34,7 +38,14 @@ public class TranslateViewController implements Initializable {
         String outText = GoogleScriptModel.translate("en", "vi", textInput.getText());
         Platform.runLater(() -> textOutput.setText(outText));
       } catch (IOException e) {
-        e.printStackTrace();
+        Platform.runLater(() -> {
+          textOutput.setText(Constants.NO_INTERNET);
+          Alert alert = new Alert(Alert.AlertType.ERROR);
+          alert.setTitle("Error");
+          alert.setHeaderText("");
+          alert.setContentText(Constants.NO_INTERNET);
+          Optional<ButtonType> option = alert.showAndWait();
+        });
       }
     });
     testThread.start();

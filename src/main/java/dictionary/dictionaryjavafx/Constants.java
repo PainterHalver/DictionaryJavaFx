@@ -9,6 +9,7 @@ public final class Constants {
 
   public static final int QUERY_TIMEOUT = 5; //second
   public static final String INIT_QUERY = "hello";
+  public static final String NO_INTERNET = "Cannot connect to API server!";
   public static final String NO_EXPRESSIONS_FOUND = "<h3>Sorry, no expressions found! <br> Maybe try using Google Translate instead?</h3>";
   public static final String GOOGLE_API_LOADING_TEXT = "Sending it to Google, please wait... :)";
   public static final String GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyX0vgobPcX82_GwJ7wrjqopu1KkL3rM2AVS6jZg_kuiB9YUqVSezvuWiRUCDdl5QSh/exec";

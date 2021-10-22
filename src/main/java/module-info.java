@@ -8,7 +8,8 @@ module dictionary.dictionaryjavafx {
   requires org.kordamp.bootstrapfx.core;
   requires java.sql;
   requires java.desktop;
+    requires freetts;
 
-  opens dictionary.dictionaryjavafx to javafx.fxml;
+    opens dictionary.dictionaryjavafx to javafx.fxml;
   exports dictionary.dictionaryjavafx;
 }

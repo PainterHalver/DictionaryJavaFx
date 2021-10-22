@@ -2,6 +2,10 @@
     -fx-focus-color: transparent;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
 .button, .toggle-button{
     -fx-cursor: hand;
     /*-fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;*/

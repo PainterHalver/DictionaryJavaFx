@@ -5,13 +5,18 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
-
+import com.sun.speech.freetts.Voice;
+import com.sun.speech.freetts.VoiceManager;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 public class TtsModel {
   private static AudioInputStream din = null;
@@ -59,6 +64,13 @@ public class TtsModel {
 
       } catch (Exception e) {
         e.printStackTrace();
+        Platform.runLater(() -> {
+          Alert alert = new Alert(Alert.AlertType.ERROR);
+          alert.setTitle("Error");
+          alert.setHeaderText("");
+          alert.setContentText(Constants.NO_INTERNET);
+          Optional<ButtonType> option = alert.showAndWait();
+        });
       } finally {
         if (din != null) {
           try {
@@ -118,12 +130,21 @@ public class TtsModel {
       }
     }
 
-
-
-//  public static void main(String[] args) throws InterruptedException {
-//
-//    googleTss("hello world this is google speaking");
-//    Thread.sleep(1000);
-//    voicerssTss("hello world this is voicer speaking");
-//  }
+  public static void freeTts(String query) {
+    System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
+    Voice voice;//Creating object of Voice class
+    voice = VoiceManager.getInstance().getVoice("kevin");//Getting voice
+    if (voice != null) {
+      voice.allocate();//Allocating Voice
+    }
+    try {
+      voice.setRate(190);//Setting the rate of the voice
+      voice.setPitch(150);//Setting the Pitch of the voice
+      voice.setVolume(2);//Setting the volume of the voice
+      voice.speak(query);//Calling speak() method
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
 }

@@ -32,10 +32,15 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import javax.swing.text.html.ImageView;
+
 
 public class DictionaryController implements Initializable {
   @FXML
   private ComboBox filterComboBox;
+
+  @FXML
+  private ComboBox ttsComboBox;
 
   @FXML
   private Button btnSearch;
@@ -59,11 +64,15 @@ public class DictionaryController implements Initializable {
   private TextField searchInput;
 
   @FXML
+  private Button btnSpeaker;
+
+  @FXML
   private ListView<Expression> wordListView;
 
 
   Expression query = new Expression(Constants.INIT_QUERY);
   String currentListType = "All";
+  String currentTtsType = "FreeTTS (Offline)";
 
 
   private void setList(String currentListType) {
@@ -77,25 +86,35 @@ public class DictionaryController implements Initializable {
     }
   }
 
+  private void renderWebView(Expression query) {
+    WebEngine engine = webView.getEngine();
+    String html = DatabaseModel.htmlQuery(query);
+    engine.loadContent(html);
+    if (Objects.equals(html, Constants.NO_EXPRESSIONS_FOUND)) {
+      if (!btnSpeaker.getStyleClass().contains("hidden")){
+        btnSpeaker.getStyleClass().add("hidden");
+      }
+    } else {
+      btnSpeaker.getStyleClass().remove("hidden");
+    }
+  }
+
   class XCell extends ListCell<Expression> {
     HBox hbox = new HBox();
     Label label = new Label("(empty)");
     Pane pane = new Pane();
-    Button speakBtn = new Button("\uD83D\uDD0A"); //speaker
     Button userBtn = new Button("👤");
     ToggleButton favBtn = new ToggleButton("⭐");
     Expression lastItem;
 
     public XCell() {
       super();
-      hbox.getChildren().addAll(label, pane, speakBtn);
+      hbox.getChildren().addAll(label, pane);
       HBox.setHgrow(pane, Priority.ALWAYS);
       hbox.setAlignment(Pos.CENTER);
-      speakBtn.getStyleClass().add("btn-list-speak");
       favBtn.getStyleClass().add("btn-fav");
       userBtn.getStyleClass().add("btn-user");
       userBtn.setDisable(true);
-      speakBtn.setOnAction(event -> TtsModel.apiTTS(lastItem.getExpression(), Constants.GOOGLE_ENG_TTS_URL));
       favBtn.setOnAction(event -> {
         if (favBtn.isSelected()) {
           DatabaseModel.addFavourite(lastItem.getId());
@@ -119,29 +138,39 @@ public class DictionaryController implements Initializable {
         assert item != null;
         if (item.isUserCreated()) {
           hbox.getChildren().clear();
-          hbox.getChildren().addAll(label, pane, userBtn, speakBtn);
+          hbox.getChildren().addAll(label, pane, userBtn);
         } else if (item.isFavourite()) {
           hbox.getChildren().clear();
           favBtn.setSelected(true);
-          hbox.getChildren().addAll(label, pane, favBtn, speakBtn);
+          hbox.getChildren().addAll(label, pane, favBtn);
         } else {
           hbox.getChildren().clear();
           favBtn.setSelected(false);
-          hbox.getChildren().addAll(label, pane,favBtn, speakBtn);
+          hbox.getChildren().addAll(label, pane,favBtn);
         }
         setGraphic(hbox);
       }
     }
   }
 
+  public void speak(Expression query) {
+    switch (currentTtsType) {
+      case "FreeTTS (Offline)" -> TtsModel.freeTts(query.getExpression());
+      case "GoogleTTS (API)" -> TtsModel.apiTTS(query.getExpression(), Constants.GOOGLE_ENG_TTS_URL);
+      case "VoicersTTS (API)" -> TtsModel.apiTTS(query.getExpression(), Constants.VOICERSS_TTS_URL);
+    }
+  }
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    btnSpeaker.setOnAction(event -> speak(query));
+
     //Disable Delete button
     btnDelete.setDisable(true);
 
     WebEngine webEngine = webView.getEngine();
-    webEngine.loadContent(DatabaseModel.htmlQuery(query));
+    webEngine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("html.css")).toString());
+    renderWebView(query);
 
 
     // render word list on app start
@@ -159,6 +188,18 @@ public class DictionaryController implements Initializable {
     filterComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, o, t1) -> {
       currentListType = (String) filterComboBox.getSelectionModel().getSelectedItem();
       setList(currentListType);
+    });
+
+    //INIT TTS COMBO BOX
+    ObservableList<String> ttsOptions = FXCollections.observableArrayList(
+            "FreeTTS (Offline)",
+            "GoogleTTS (API)",
+            "VoicersTTS (API)"
+    );
+    ttsComboBox.getItems().addAll(ttsOptions);
+    ttsComboBox.getSelectionModel().select(currentTtsType);
+    ttsComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, o, t1) -> {
+      currentTtsType = (String) ttsComboBox.getSelectionModel().getSelectedItem();
     });
 
     // TYPE IN SEARCH INPUT
@@ -182,7 +223,7 @@ public class DictionaryController implements Initializable {
           // Persist meaning view
           if(wordListView.getSelectionModel().getSelectedItem() != null) {
             query = wordListView.getSelectionModel().getSelectedItem();
-            webEngine.loadContent(DatabaseModel.htmlQuery(query));
+            renderWebView(query);
 
             //If selected item is user created, enable the Delete button
             btnDelete.setDisable(!query.isUserCreated());
@@ -195,14 +236,14 @@ public class DictionaryController implements Initializable {
 //      if(!Objects.equals(query.getExpression(), "")) {
       if(!Objects.equals(searchInput.getText(), "")) {
         // Not changing the query
-        webEngine.loadContent(DatabaseModel.htmlQuery(new Expression(searchInput.getText())));
+        renderWebView(new Expression(searchInput.getText()));
       }
     });
     searchInput.setOnAction(actionEvent -> {
 //      query.setExpression(searchInput.getText());
 //      if(!Objects.equals(query.getExpression(), "")) {
       if(!Objects.equals(searchInput.getText(), "")) {
-        webEngine.loadContent(DatabaseModel.htmlQuery(new Expression(searchInput.getText())));
+        renderWebView(new Expression(searchInput.getText()));
       }
     });
 
@@ -234,6 +275,7 @@ public class DictionaryController implements Initializable {
 ////      query.setExpression(searchInput.getText());
 //      String urlToGo = "https://translate.google.com/?hl=vi&sl=en&tl=vi&text=" + URLEncoder.encode(searchInput.getText(), StandardCharsets.UTF_8) + "&op=translate";
 //      webEngine.load(urlToGo);
+//    btnSpeaker.getStyleClass().remove("hidden");
 //    });
 
     //EDIT BUTTON
@@ -284,6 +326,7 @@ public class DictionaryController implements Initializable {
         setList(currentListType);
         // 3. Rerender webengine so that user knows word is deleted
         webEngine.loadContent("<h1>Deleted: " + word + "</h1>");
+        btnSpeaker.getStyleClass().remove("hidden");
         // 4. Set current exp back to ''
         query = new Expression("");
       }
