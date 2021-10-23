@@ -37,6 +37,15 @@
     -fx-text-fill: #fff;
 }
 
+/*.list-view .list-cell:even {*/
+/*    -fx-background-color: #F0FFF0;*/
+/*    -fx-text-fill: black;*/
+/*}*/
+/*.list-view .list-cell:odd {*/
+/*    -fx-background-color: #F5F5F5;*/
+/*    -fx-text-fill: black;*/
+/*}*/
+
 
 /*
 .btn:focused {

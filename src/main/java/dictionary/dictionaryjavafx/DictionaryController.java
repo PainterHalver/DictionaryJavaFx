@@ -7,8 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -31,6 +35,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import netscape.javascript.JSObject;
 
 import javax.swing.text.html.ImageView;
 
@@ -88,9 +93,9 @@ public class DictionaryController implements Initializable {
 
   private void renderWebView(Expression query) {
     WebEngine engine = webView.getEngine();
-    String html = DatabaseModel.htmlQuery(query);
-    engine.loadContent(html);
-    if (Objects.equals(html, Constants.NO_EXPRESSIONS_FOUND)) {
+    String markup = DatabaseModel.htmlQuery(query);
+    engine.loadContent(markup);
+    if (Objects.equals(markup, Constants.NO_EXPRESSIONS_FOUND)) {
       if (!btnSpeaker.getStyleClass().contains("hidden")){
         btnSpeaker.getStyleClass().add("hidden");
       }
@@ -158,6 +163,12 @@ public class DictionaryController implements Initializable {
       case "FreeTTS (Offline)" -> TtsModel.freeTts(query.getExpression());
       case "GoogleTTS (API)" -> TtsModel.apiTTS(query.getExpression(), Constants.GOOGLE_ENG_TTS_URL);
       case "VoicersTTS (API)" -> TtsModel.apiTTS(query.getExpression(), Constants.VOICERSS_TTS_URL);
+    }
+  }
+
+  public class Bridge {
+    public void say() {
+      speak(query);
     }
   }
 

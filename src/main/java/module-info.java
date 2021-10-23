@@ -9,6 +9,7 @@ module dictionary.dictionaryjavafx {
   requires java.sql;
   requires java.desktop;
     requires freetts;
+    requires jdk.jsobject;
 
     opens dictionary.dictionaryjavafx to javafx.fxml;
   exports dictionary.dictionaryjavafx;

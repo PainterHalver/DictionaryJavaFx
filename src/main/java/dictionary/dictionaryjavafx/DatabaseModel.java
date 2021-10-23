@@ -89,7 +89,7 @@ public class DatabaseModel {
 //      ResultSet rs = statement.executeQuery(
 //          "SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query +
 //              "%\" ORDER BY LENGTH(word) LIMIT 100");
-      PreparedStatement pstm = connection.prepareStatement("SELECT DISTINCT(word), id FROM av where id not in (SELECT id from favourite) AND word LIKE ? LIMIT 100");
+      PreparedStatement pstm = connection.prepareStatement("SELECT MIN(id) AS id, word FROM av where id not in (SELECT id from favourite) AND word LIKE ? GROUP BY word ORDER BY id LIMIT 100");
       pstm.setString(1, query + "%");
       ResultSet rs = pstm.executeQuery();
       while (rs.next()) {
@@ -110,14 +110,10 @@ public class DatabaseModel {
       expressionsRtn.sort(new Comparator<Expression>() {
         @Override
         public int compare(Expression left, Expression right) {
-//          String leftExp = left.getExpression();
-//          String rightExp = right.getExpression();
-//          if (leftExp.length() < rightExp.length()) {
-//            return -1;
-//          }
-//          if (leftExp.length() > rightExp.length()) {
-//            return 1;
-//          }
+          int a = Integer.compare(left.getExpression().length(), right.getExpression().length());
+          if (a != 0) {
+            return a;
+          }
           return left.getExpression().compareTo(right.getExpression());
         }
       });

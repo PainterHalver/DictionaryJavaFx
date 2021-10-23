@@ -1,9 +1,11 @@
-/** {*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*}*/
+body {
+    font-family: Arial, serif;
+    background-color: #F5F5F5;
+}
 
-/*html {*/
-/*    font-size: 16px;*/
-/*    font-family: Arial, SansSerif, serif;*/
-/*}*/
+.speaker {
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 0.5rem;
+}
