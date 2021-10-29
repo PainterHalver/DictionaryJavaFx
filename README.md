@@ -17,13 +17,13 @@ TODO:
 - ~~" and ' sql error~~
 
 Tính năng: 
-- Tính năng cơ bản của một từ điển:
+- Cơ bản:
   + Tra từ, phát âm từ
   + Thêm, sửa, xóa từ mới
   + Đánh dấu từ yêu thích và từ do người dùng tạo
 - Khác:
   + Dùng API của Google Translate (Google Script)
-  + Dùng sqlite làm database cho từ điển gốc, từ của người dùng (Đã fix lỗi khi input ' hoặc ", từ trùng lặp trong database)
+  + Dùng sqlite làm database cho từ điển gốc, từ của người dùng (filter từ trùng lặp trong database)
   + Gợi ý từ khi gõ
   + Giao diện đồ họa cơ bản
-  + Giao diện đồ họa dễ dùng và thân thiện: responsive, có preview khi thêm sửa xóa, có Singleton class để chuyển dữ liệu giữa các scene
+  + Giao diện đồ họa dễ dùng và thân thiện: responsive, có preview khi thêm sửa xóa, có class để chuyển dữ liệu giữa các scene

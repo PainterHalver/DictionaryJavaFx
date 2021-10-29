@@ -6,10 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -80,20 +78,29 @@ public class DatabaseModel {
 
   public static ObservableList<Expression> allExpressionsQuery(String query) {
     ObservableList<Expression> expressionsRtn = FXCollections.observableArrayList();
+    List<String> favIds = new ArrayList<>();
     // Query from user added table
     expressionsRtn.addAll(userExpressionsQuery(query));
-    expressionsRtn.addAll(favoriteExpressionsQuery(query));
+//    expressionsRtn.addAll(favoriteExpressionsQuery(query));
     try {
       openConnection();
       // Query from old table
 //      ResultSet rs = statement.executeQuery(
 //          "SELECT DISTINCT(word) FROM av WHERE word LIKE \"" + query +
 //              "%\" ORDER BY LENGTH(word) LIMIT 100");
-      PreparedStatement pstm = connection.prepareStatement("SELECT MIN(id) AS id, word FROM av where id not in (SELECT id from favourite) AND word LIKE ? GROUP BY word ORDER BY id LIMIT 100");
+      ResultSet rs1 = statement.executeQuery("SELECT id from favourite");
+      while (rs1.next()) {
+        favIds.add(rs1.getString("id"));
+      }
+      PreparedStatement pstm = connection.prepareStatement("SELECT MIN(id) AS id, word FROM av where word LIKE ? GROUP BY word ORDER BY id LIMIT 100");
       pstm.setString(1, query + "%");
       ResultSet rs = pstm.executeQuery();
       while (rs.next()) {
-        expressionsRtn.add(new Expression(rs.getString("word"), rs.getString("id")));
+        if (favIds.contains(rs.getString("id"))) {
+          expressionsRtn.add(new Expression(rs.getString("word"), true, rs.getString("id")));
+        } else {
+          expressionsRtn.add(new Expression(rs.getString("word"), rs.getString("id")));
+        }
       }
     } catch (SQLException e) {
       // if the error message is "out of memory",
@@ -150,7 +157,6 @@ public class DatabaseModel {
     } finally {
       closeConnection();
     }
-
     return html.toString().equals("")
         ? Constants.NO_EXPRESSIONS_FOUND
         : html.toString();
