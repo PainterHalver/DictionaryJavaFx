@@ -92,7 +92,7 @@ public class DatabaseModel {
       while (rs1.next()) {
         favIds.add(rs1.getString("id"));
       }
-      PreparedStatement pstm = connection.prepareStatement("SELECT MIN(id) AS id, word FROM av where word LIKE ? GROUP BY word ORDER BY id LIMIT 100");
+      PreparedStatement pstm = connection.prepareStatement("SELECT MIN(id) AS id, word FROM av where word LIKE ? GROUP BY word ORDER BY id LIMIT 20000");
       pstm.setString(1, query + "%");
       ResultSet rs = pstm.executeQuery();
       while (rs.next()) {
